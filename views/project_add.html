@@ -1,0 +1,430 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+    .layui-layout-body {
+        overflow: auto;
+    }
+
+    .layui-layout-admin .layui-body {
+        bottom: auto;
+    }
+    .layui-form-select dl{
+        z-index: 99999;
+    }
+    .upload-item-box {
+          width: 145px;
+          height: 145px;
+          text-align: center;
+          margin-right: 5px;
+          float: left;
+    }
+    .upload-item-box img{
+        height: 100%;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if project_id %}
+  <blockquote class="layui-elem-quote">编辑项目</blockquote>
+{% else %}
+  <blockquote class="layui-elem-quote">添加项目</blockquote>
+{% endif %}
+  <div class="table-body-main" style="width:80%;">
+    <form class="layui-form layui-form-pane1" action="" >
+      
+      <div class="layui-form-item">
+        <label class="layui-form-label">项目归属</label>
+        <div class="layui-input-block">
+          <select name="role_id"   id="role_id">
+            {% if is_administrator %}
+            <option value=""></option> 
+            <option value="1" {% if role_id==1 %} selected {% endif %} >四川</option>
+            <option value="2" {% if role_id==2 %} selected {% endif %} >云南</option>
+            <option value="3" {% if role_id==3 %} selected {% endif %} >贵州</option>
+            <option value="4" {% if role_id==4 %} selected {% endif %} >青海</option>
+            <option value="5" {% if role_id==5 %} selected {% endif %} >西藏</option>
+            <option value="6" {% if role_id==6 %} selected {% endif %} >甘肃</option>
+            <option value="7" {% if role_id==7 %} selected {% endif %} >陕西</option>
+            {% else %} 
+                {% if role_id==1 %}<option value="1"  selected>四川</option>{% endif %}
+                {% if role_id==2 %}<option value="2"  selected>云南</option>{% endif %} 
+                {% if role_id==3 %}<option value="3"  selected>贵州</option>{% endif %} 
+                {% if role_id==4 %}<option value="4"  selected>青海</option>{% endif %} 
+                {% if role_id==5 %}<option value="5"  selected>西藏</option>{% endif %}
+                {% if role_id==6 %}<option value="6"  selected>甘肃</option>{% endif %} 
+                {% if role_id==7 %}<option value="7"  selected>陕西</option>{% endif %} 
+            {% endif %}
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">项目名称</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_title" lay-verify="required|title" required placeholder="请输入项目名称" autocomplete="off" class="layui-input" value="{{project_title}}">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">所属行业</label>
+        <div class="layui-input-block">
+          <select name="project_industry"  project_industry="{{project_industry}}" id="attrIdSelect">
+            <option value=""></option> 
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">实施城市</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_implementation_city"  placeholder="请输入实施城市" autocomplete="off" class="layui-input" value="{{project_implementation_city}}">
+        </div>
+      </div>
+      
+      <div class="layui-form-item">
+        <label class="layui-form-label">项目发布时间</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" id="datePicker"  name="project_time" value="{{project_time}}" placeholder="yyyy-MM-dd HH:mm:ss">
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">项目介绍</label>
+        <div class="layui-input-block">
+          <textarea placeholder="请输入项目介绍" name="project_desc"  class="layui-textarea">{{project_desc}}</textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">项目图片</label>
+        <div class="layui-input-inline">
+          <button type="button" class="layui-btn" id="btnUploadPic">选择图片</button> 
+        </div>
+        <div class="layui-form-mid layui-word-aux">当前只允许上传 .png .gif .jpeg .bmp 格式图片, 双击可删除图片</div>
+     </div> 
+     <div  class="layui-form-item layui-form-text" id="previewPic" {%if project_pic.length ==0 %}style="display: none;"{% endif %}>
+       <label class="layui-form-label"></label>
+       <div class="layui-input-block">
+          <div class="layui-upload-list">
+             {% for k,v  in project_pic %}
+               <div class="upload-item-box">
+                  <img class="layui-upload-img" src="{{base_url}}{{v}}">'
+                  <input type="hidden" name="project_pic" value='{{v}}'>
+               </div>
+             {% endfor %}
+          </div>
+       </div>
+     </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">项目视频</label>
+        <div class="layui-input-inline">
+          <button type="button" class="layui-btn" id="btnUploadVideo">选择视频</button> 
+        </div>
+        <div class="layui-form-mid layui-word-aux">当前只允许上传 .mp4 格式视频文件 </div> 
+      </div> 
+      <div  class="layui-form-item layui-form-text" id="previewVideo" {%if project_video.length ==0 %}style="display: none;"{% endif %}>
+       <label class="layui-form-label"></label>
+       <div class="layui-input-block">
+          <div class="layui-upload-list">
+            {% for k,v  in project_video %}
+               <div class="upload-item-box">
+                  <img class="layui-upload-img" src="{{base_url}}{{v}}?vframe/jpg/offset/0">'
+                  <input type="hidden" name="project_video" value='{{v}}'>
+               </div>
+             {% endfor %}
+          </div>
+       </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">盈利模式及经济效益预测</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_profit"  value="{{project_profit}}"  placeholder="请输入盈利模式及经济效益预测" autocomplete="off" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">项目阶段</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_stage" value="{{project_stage}}"  autocomplete="off" class="layui-input" placeholder="请输入项目阶段">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">合作方式</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_cooperation"  value="{{project_cooperation}}"  autocomplete="off" class="layui-input" placeholder="请输入合作方式">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">资金用途</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_funds" value="{{project_funds}}"  autocomplete="off" class="layui-input" placeholder="请输入资金用途">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">接受资本类型</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_funds_type"  value="{{project_funds_type}}"   autocomplete="off" class="layui-input" placeholder="请输入接受资本类型">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">投资总额</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_funds_all" value="{{project_funds_all}}"   autocomplete="off" class="layui-input" placeholder="请输入投资总额">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">尚缺资金</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_funds_shortage"  value="{{project_funds_shortage}}" autocomplete="off" class="layui-input" placeholder="请输入尚缺资金">
+        </div>
+      </div>
+
+      <div class="layui-form-item" pane>
+        <label class="layui-form-label">是否接受金融委托</label>
+        <div class="layui-input-block">
+          {% if project_funds_accept != 1%}
+            <input type="radio" name="project_funds_accept" value="1" title="是">
+            <input type="radio" name="project_funds_accept" value="0" title="否" checked>
+          {% else %}
+            <input type="radio" name="project_funds_accept" value="1" title="是" checked>
+            <input type="radio" name="project_funds_accept" value="0" title="否">
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">单位/个人名称</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_company"  value="{{project_company}}" autocomplete="off" class="layui-input" placeholder="请输入单位/个人名称">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">法定代表人</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_representative"  value="{{project_representative}}"  autocomplete="off" class="layui-input" placeholder="请输入法定代表人">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">负责人</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_leader" value="{{project_leader}}" autocomplete="off" class="layui-input" placeholder="请输入负责人">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">网址</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_url"  value="{{project_url}}" autocomplete="off" class="layui-input" placeholder="请输入网址">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_tel"  value="{{project_tel}}" autocomplete="off" class="layui-input" placeholder="请输入联系电话">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">E-mail</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_email" value="{{project_email}}"     autocomplete="off" class="layui-input" placeholder="请输入E-mail">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">邮编</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_zipcode" value="{{project_zipcode}}"    autocomplete="off" class="layui-input" placeholder="请输入邮编">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">传真</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_fax"  value="{{project_fax}}"  autocomplete="off" class="layui-input" placeholder="请输入传真">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">通讯地址</label>
+        <div class="layui-input-block">
+          <input type="text" name="project_address" value="{{project_address}}" autocomplete="off" class="layui-input" placeholder="请输入通讯地址">
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">单位简介</label>
+        <div class="layui-input-block">
+          <textarea placeholder="请输入单位简介" class="layui-textarea" name="project_company_desc">{{project_company_desc}}</textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+          <textarea placeholder="请输入备注" name="project_mark" class="layui-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          {% if project_id %}
+            <input type="hidden" value="{{project_id}}" name="project_id">
+          {% endif %}
+          <button class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
+          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).ready(function(){
+  layui.use(['laydate','form','upload','layer'], function(){ 
+
+    var laydate = layui.laydate,
+        upload  = layui.upload, 
+        form    = layui.form, 
+        layer   = layui.layer;  
+
+    Http({url:"/attr?attr_group_id=1",method:'GET'},{},function(rst){
+        if(rst.code == 2000){
+             var attrIdSelect = $('#attrIdSelect');
+             var curAttrId = attrIdSelect.attr('project_industry');
+             var options='<option value=""></option>';
+             $.each(rst.data,function(k,v){
+                if (curAttrId == k){
+                    options += '<option value="'+k+'" selected>'+v+'</option>';
+                } else {
+                    options += '<option value="'+k+'">'+v+'</option>';
+                }
+             }); ;
+             attrIdSelect.html(options);
+             layui.form.render('select');
+        }
+    });
+
+    // 双击删除上传的图片
+    $('body').on('dblclick','.upload-item-box',function(){
+        $(this).remove();
+    });
+
+ 
+     //上传图片实例
+    var uploadPic = upload.render(initUploadParams(
+      '#btnUploadPic'
+      ,function(rst){
+          $('#previewPic').show();
+          var option = 
+             '<div class="upload-item-box">'+
+                '<img class="layui-upload-img" src="'+rst.data.base_url+rst.data.key+'">'+
+                '<input type="hidden" name="project_pic" value=\''+rst.data.key+'\' >'+
+             '</div>';
+          $('#previewPic .layui-upload-list').append(option); 
+      } 
+      ,function(rst){
+          layer.msg(rst.msg);
+      }
+      ,{ 
+        exts:'jpg|png|gif|bmp|jpeg' // 只允许上传pdf
+        ,size:500*1024    // 最大允许上传的文件大小kb
+      } 
+    ));
+
+    // 上传视频实例
+    var uploadVideo = upload.render(initUploadParams(
+      '#btnUploadVideo'
+      ,function(rst){
+          $('#previewVideo').show();
+          var option = 
+             '<div class="upload-item-box">'+
+                '<img class="layui-upload-img" src="'+rst.data.base_url+rst.data.key+'?vframe/jpg/offset/0">'+
+                '<input type="hidden" name="project_video" value=\''+rst.data.key+'\' >'+
+             '</div>';
+          $('#previewVideo .layui-upload-list').append(option); 
+      } 
+      ,function(rst){
+          layer.msg(rst.msg);
+      }
+      ,{
+         accept:'file'     // 接受所有文件
+        ,exts:'mp4'        // 只允许上传pdf
+        ,size:500*1024     // 最大允许上传的文件大小kb
+      } 
+    )); 
+
+
+    // 日期picker
+    laydate.render({
+      elem: '#datePicker'
+      ,type: 'datetime'
+    });
+
+      // 验证规则
+    form.verify({
+        title: function (value) {
+            if (value.length < 5) {
+                return '标题至少得5个字符啊';
+            }
+        },
+        url: function(value){
+           if (!(value.length > 0)){
+              return '请先上传期刊';
+           }
+        }
+    });
+
+
+    //监听提交
+    form.on('submit(demo1)', function (data) {
+        // 获取表单数据 
+        var params = data.field||{};
+        // 处理视频
+        var pics = []; // 图
+        var videos;// 视频
+        $.each($('input[name=project_pic]'),function(k,v){ 
+              pics.push(v.value);
+        }); 
+        $.each($('input[name=project_video]'),function(k,v){ 
+              videos.push(v.value);
+        }); 
+        if (pics){
+          params.project_pic = JSON.stringify(pics);
+        }
+        if (videos){  
+          params.project_video = JSON.stringify(videos);
+        }
+        // 提交数据
+        Http({url:'/project',method:'post'},params,function(rst){ 
+             if(rst.code == 2000){
+                layer.msg( rst.msg, {icon:1, time:1000},function(){
+                   location.href="/project_list?is_show=0&is_audit=1&tab=1";  
+                });
+             }else{
+                layer.msg(rst.msg, {icon:2, time:2000});
+             }  
+        }); 
+        return false;
+    });
+
+  });
+}); 
+ 
+</script>
+{% endblock %}

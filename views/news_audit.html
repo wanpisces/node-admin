@@ -1,0 +1,205 @@
+{% extends './public/layout.html' %}
+{% block header %}{% endblock %}
+
+{% block content %}
+  <blockquote class="layui-elem-quote">资讯列表</blockquote>
+  <div class="table-body-main">
+    <div class="clearfix">
+      <div class="layui-btn-group lf">
+        <a href="/news_audit?is_audit=2&tab=1" class="layui-btn {{index == 1?'true':''}}">待审核</a>
+        <a href="/news_audit?is_audit=3&tab=2" class="layui-btn {{index == 2?'true':''}}">已通过</a>
+        <a href="/news_audit?is_audit=4&tab=3" class="layui-btn {{index == 3?'true':''}}">已驳回</a>
+      </div>
+      <div class="layui-btn-group rt">
+        <button class="layui-btn manydelete" data-type="getCheckData">批量删除</button>
+      </div>
+    </div>
+    <table class="layui-table" id="statusTable1" lay-filter="news-list">
+      <thead>
+        <tr>
+          <th lay-data="{checkbox:true}"></th>
+          <th lay-data="{field:'id', width:80}">资讯ID</th>
+          <th lay-data="{field:'newstitle', width:230}">文章标题</th>
+          <th lay-data="{field:'newstype', width:120}">文章类型</th>
+          <th lay-data="{field:'origin', width:120}">来源</th>
+          <th lay-data="{field:'time', width:150}">更新时间</th>
+          <th lay-data="{field:'publishtype', width:120}">发布类型</th>
+          <th lay-data="{field:'operate', width:222}">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in list %}
+        <tr>
+          <td></td>
+          <td class="newsId">{{item.news_id}}</td>
+          <td><a href="news_audit_detail?news_id={{item.news_id}}&index={{index}}">{{item.news_title}}</a></td>
+          <td>{{item.attr_value}}</td>
+          <td>{{item.news_resource}}</td>
+          <td>{{item.update_time}}</td>
+          <td>{{typeTitle}}</td>
+          {% if index == 1 %}
+          <td><a href="javascript:;" class="news_audit_up">通过<input type="hidden" name="" value="{{item.news_id}}"></a><a class="news_audit_refuse">驳回<input type="hidden" name="" value="{{item.news_id}}"></a><a href="javascript:;" class="delete">删除<input type="hidden" name="" value="{{item.news_id}}"></a></td>
+          {% elseif index == 2 %}
+          <td><a href="/news_audit_detail?news_id={{item.news_id}}">查看<input type="hidden" name="" value="{{item.news_id}}"></a><a class="delete">删除<input type="hidden" name="" value="{{item.news_id}}"></a></td>
+          {% elseif index == 3 %}
+          <td><a href="/news_audit_detail?news_id={{item.news_id}}">查看<input type="hidden" name="" value="{{item.news_id}}"></a><a class="delete">删除<input type="hidden" name="" value="{{item.news_id}}"></a></td>
+          {%  endif %}
+        </tr>
+         {% endfor %}
+      </tbody>
+    </table>
+    <div id="demo7"></div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+var arrId = [];
+layui.use('table', function(){
+  var table = layui.table;
+  table.init('news-list');//初始化表格
+  //全选
+  table.on('checkbox(news-list)', function(obj){
+    if (obj.type == 'all') {
+      if (obj.checked) {
+        $('.newsId').each(function(){
+          arrId.push($(this).html());
+        })
+      }else{
+        arrId.length = 0;
+      }
+    }else{
+      if (obj.checked) {
+        arrId.push(obj.data.id);
+      }else{
+        var _id = obj.data.id;
+        for (var i = 0; i < arrId.length; i++) {
+          if (_id == arrId[i]) {
+            arrId.splice(i, 1);
+          };
+        }
+      }
+    }
+  });
+});
+//批量删除
+  $( 'body').on('click', '.manydelete',function(){
+    if (arrId.length>0) {
+      layer.confirm('确定要删除选中资讯吗？', {
+        btn: ['是的','取消'] //按钮
+      }, function(){
+         ajaxRequest('/newsDelete','GET',{'news_id': JSON.stringify(arrId)},callback);
+      }, function(){
+        return;
+      });
+    }
+  });
+layui.use(['laypage', 'layer'], function(){
+  var curoperate = '{{index}}';
+  var laypage = layui.laypage
+  ,layer = layui.layer;
+  var total_num = {{total_num}};
+  var curPage = {{current_page}};
+  var url = '';
+  //完整功能
+  laypage.render({
+    elem: 'demo7'
+    ,count: total_num
+    ,limit:10
+    ,layout: ['count', 'prev', 'page', 'next','skip']
+    ,curr: curPage
+    ,jump: function(obj,first){
+      if(!first){
+        var current_page = obj.curr;
+        var page_size = obj.limit;
+        if (curoperate == 1) {
+          url = '/news_audit?page_size='+page_size+'&current_page='+current_page+'&is_audit=2&tab='+curoperate;
+        }else if(curoperate == 2){
+          url = '/news_audit?page_size='+page_size+'&current_page='+current_page+'&is_audit=3&tab='+curoperate;
+        }else if(curoperate == 3){
+          url = '/news_audit?page_size='+page_size+'&current_page='+current_page+'&is_audit=4&tab='+curoperate;
+        }
+        window.location.href = url;
+        return;
+      }
+    }
+  });
+});
+
+//通过
+$( 'body').on('click', '.news_audit_up',function(){
+  var _this = $(this);
+  layer.confirm('确定要提交审核该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/news_audit_pass','GET',{'news_id': news_id,'is_audit':3},callback);
+  }, function(){
+    return;
+  });
+})
+//驳回
+$( 'body').on('click', '.news_audit_refuse',function(){
+  var _this = $(this);
+  layer.config({
+    extend: 'extend/layer.ext.js'
+  });
+  layer.prompt({
+      title: '驳回原因',
+      formType: 2,// prompt风格，支持0-2
+      btn: ['确定', '取消']
+  }, function(content) {
+      var news_id = _this.find('input').val();
+      ajaxRequest('/news_audit_pass','GET',{'news_id': news_id,'is_audit':4,audit_remart:content},callback);
+  });
+})
+//上架
+$( 'body').on('click', '.up-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要上架该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsState','GET',{'news_id': news_id,'is_show':1},callback);
+  }, function(){
+    return;
+  });
+})
+//下架
+$( 'body').on('click', '.under-news',function(){
+  var _this = $(this);
+  layer.confirm('确定要下架该咨询吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsState','GET',{'news_id': news_id,'is_show':2},callback);
+  }, function(){
+    return;
+  });
+});
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsDelete','GET',{'news_id': news_id},callback);
+  }, function(){
+    return;
+  });
+});
+
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      success:callback
+  });
+}
+function callback(json){
+  window.location.reload();
+}
+</script>
+{% endblock %}

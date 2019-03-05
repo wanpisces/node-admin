@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>期刊详情</title>
+    <!-- 设置编码 -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="textml" charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8">
+    <meta http-equiv="Content-Type" content="IE=Edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="keywords" content="藏羌彝文化集市"/>
+    <meta name="description" content="藏羌彝文化集市"/>
+    <meta name="copyright" content="Copyright (c) 大榕树 2017"/>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <!-- CSS lib -->
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <div class="loc-link-wrap">
+    <a href="/eper_list?is_show=1&tab=1">期刊列表</a>&gt;&nbsp;&nbsp;<a href="">期刊详情</a>
+  </div>
+  <div>
+    <blockquote class="layui-elem-quote">当前期刊：{{eper_title}}/
+      {% if is_show == 1 %}已发布
+      {% elseif is_show == 2 %}已下架
+      {% elseif is_show == 0 %}草稿
+      {% endif %}
+      <div class="layui-btn-group" style="margin-left: 50px;">
+        {% if is_show == 1 %}
+        <button class="layui-btn under-news" data-type="getCheckData">下架<input type="hidden" name="" value="{{eper_id}}"></button>
+        {% else%}
+        <button class="layui-btn sumit-check" data-type="getCheckData">发布<input type="hidden" name="" value="{{eper_id}}"></button>
+        {% endif %}
+        <a href="/eper_edit?eper_id={{eper_id}}" class="layui-btn" data-type="isAll">编辑</a>
+        <button class="layui-btn delete" data-type="isAll">删除</button>
+      </div>
+    </blockquote>
+  </div>
+  <div class="goods-info-wrap" style="margin-top: 50px;">
+    <table>
+      <tr>
+        <td class="goods-td1">期刊ID</td>
+        <td>{{eper_id}}</td>
+      </tr>
+      <tr>
+        <td>期刊名称</td>
+        <td>{{eper_title}}</td>
+      </tr>
+      <tr>
+        <td>期刊格式</td>
+        <td>{{eper_ext}}</td>
+      </tr>
+      <tr>
+        <td>期刊简介</td>
+        <td>{{eper_desc}}</td>
+      </tr>
+    </table>
+  </div>
+</body>
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="lib/layer/2.1/layer.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script type="text/javascript">
+    //上架
+$( 'body').on('click', '.sumit-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要上架该期刊吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var eper_id = _this.find('input').val();
+    ajaxRequest('/eperState','GET',{'eper_id': eper_id,'is_show':1},callback);
+  }, function(){
+    return;
+  })
+})
+
+//下架
+$( 'body').on('click', '.under-news',function(){
+  var _this = $(this);
+  layer.confirm('确定要下架该期刊吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var eper_id = _this.find('input').val();
+  ajaxRequest('/eperState','GET',{'eper_id': eper_id,'is_show':2},callback)
+  }, function(){
+    return;
+  })
+});
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该期刊吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var eper_id = _this.find('input').val();
+    ajaxRequest('/eperDelete','GET',{'eper_id': eper_id},callback);
+  }, function(){
+    return;
+  });
+});
+
+function callback(json){
+  if (json.code) {
+    window.location.reload();
+  }
+}
+
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      traditional:true,
+      success:callback
+  });
+}
+
+</script>
+</html>

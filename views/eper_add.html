@@ -1,0 +1,120 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+  .layui-row:before, .layui-row:after{
+    display: inline !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if eper_id %}
+  <blockquote class="layui-elem-quote">编辑期刊</blockquote>
+{% else %}
+  <blockquote class="layui-elem-quote">添加期刊</blockquote>
+{% endif %}
+  <form class="layui-form" action="" style="width:80%;">
+    <div class="layui-form-item">
+      <label class="layui-form-label">期刊标题</label>
+      <div class="layui-input-block">
+        <input type="text" name="eper_title" lay-verify="required|title" required placeholder="请输入期刊标题" autocomplete="off" class="layui-input" value="{{eper_title}}">
+      </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+      <label class="layui-form-label">上传期刊</label>
+      <div class="layui-input-block layui-container" style="padding-left: 0;">
+        <div class="layui-row">
+          <div class="layui-col-md6">
+            <input type="url" name="eper_url" class="layui-input" readonly id="eper_url" lay-verify="required|url" required placeholder="期刊链接地址"  value="{{eper_url}}">
+          </div>
+
+         <div class="layui-col-md2">
+            <button type="button" class="layui-btn" id="btnUpload">
+               <i class="layui-icon">&#xe67c;</i>上传
+            </button>
+         </div>
+
+         <div class="layui-col-md4">
+            <div class="layui-form-mid layui-word-aux">当前只允许上传 .pdf 格式文件</div>
+         </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+      <label class="layui-form-label">期刊简介</label>
+      <div class="layui-input-block">
+        <textarea placeholder="请输入期刊简介" name="eper_desc"  class="layui-textarea">{{eper_desc}}</textarea>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+         {%if eper_id %}
+            <input type="hidden" name="eper_id" value="{{eper_id}}">
+         {% endif %}
+        <button class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">取消</button>
+      </div>
+    </div>
+  </form>
+{% endblock%}
+
+
+{% block footer%}
+<script type="text/javascript">
+layui.use(['form','upload'], function(){
+  var upload = layui.upload,
+      form = layui.form,
+      layer = layui.layer;
+
+  //上传实例
+  var uploadInst = upload.render(initUploadParams(
+      '#btnUpload'
+      ,function(rst){
+         $('#eper_url').val(rst.data.key);
+      }
+      ,function(rst){
+          layer.msg(rst.msg);
+      }
+      ,{
+         accept:'file'     // 接受所有文件
+        ,exts:'pdf'       // 只允许上传pdf
+        ,size:500*1024    // 最大允许上传的文件大小kb
+      }
+    ));
+
+    // 验证规则
+    form.verify({
+        title: function (value) {
+            if (value.length < 5) {
+                return '标题至少得5个字符啊';
+            }
+        },
+        url: function(value){
+           if (!(value.length > 0)){
+              return '请先上传期刊';
+           }
+        }
+    });
+
+
+    //监听提交
+    form.on('submit(demo1)', function (data) {
+        var params = data.field||{};// 表单数据
+        Http({url:'/eper',method:'post'},params,function(rst){
+             if(rst.code == 2000){
+                layer.msg( rst.msg, {icon:1, time:1000},function(){
+                   location.href="/eper_list?is_show=1";
+                });
+             }else{
+                layer.msg(rst.msg, {icon:2, time:2000});
+             }
+        });
+        return false;
+    });
+
+});
+
+</script>
+{% endblock %}

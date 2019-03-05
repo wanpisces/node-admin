@@ -1,0 +1,56 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+  .layui-tab-content p{
+      margin-bottom: 10px;
+      text-indent: 2em;
+      line-height: 23px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <blockquote class="layui-elem-quote">数据统计</blockquote>
+  <div class="layui-row">
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/news_total.png"><div class="rt">今日文章总数<br><span>{{today_news}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/item_total.png"><div class="rt">历史文章总数<br><span>{{total_news}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a href="javascript:;" class="statistics-box"><img src="user/images/pingtai_news.png"><div class="rt">今日项目总数<br><span>{{today_project}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a class="statistics-box"><img src="user/images/qikan_total.png"><div class="rt">历史项目总数<br><span>{{total_project}}</span></div></a>
+    </div>
+  </div>
+  <div class="entrance-wrap">
+    <h1>快捷入口</h1>
+    <div class="layui-row">
+      <div class="layui-col-md3">
+        <a href="/news_list?is_show=1&news_type=2&page_size=10&tab=1" class="entrance-item">
+          <img src="user/images/hot_essay.png"><br><br>
+          资讯列表
+        </a>
+      </div>
+      <div class="layui-col-md3">
+        <a href="/news_add" class="entrance-item">
+          <img src="user/images/add_essay.png"><br><br>
+          新建资讯
+        </a>
+      </div>
+      <div class="layui-col-md3">
+        <a href="/project_list?is_show=1&page_size=10&tab=1" class="entrance-item">
+          <img src="user/images/order.png"><br><br>
+          项目列表
+        </a>
+      </div>
+      <div class="layui-col-md3">
+        <a href="/project_add" class="entrance-item">
+          <img src="user/images/check.png"><br><br>
+          新建项目
+        </a>
+      </div>
+  </div>
+{% endblock %}

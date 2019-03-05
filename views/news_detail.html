@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>资讯列表</title>
+    <!-- 设置编码 -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="textml" charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8">
+    <meta http-equiv="Content-Type" content="IE=Edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="keywords" content="藏羌彝文化集市"/>
+    <meta name="description" content="藏羌彝文化集市"/>
+    <meta name="copyright" content="Copyright (c) 大榕树 2017"/>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <!-- CSS lib -->
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <div class="loc-link-wrap">
+    {% if news_type == 1 %}
+    <a href="/news_list_A?is_show=1&tab=1&news_type=1">资讯列表</a>
+    {% elseif news_type == 2 %}
+    <a href="/news_list?is_show=1&tab=1&news_type=2">资讯列表</a>
+    {% endif %}
+    &gt;&nbsp;&nbsp;<a href="javascript:;">资讯详情</a>
+  </div>
+  {% if is_audit == 4 && is_show == 0 %}
+    <div>
+      <blockquote class="layui-elem-quote">当前资讯：{{news_title.substring(0,5)}}/未通过
+        <div class="layui-btn-group" style="margin-left: 50px;">
+          <a href="/news_edit?news_id={{news_id}}" class="layui-btn" data-type="getCheckData">编辑</a>
+        </div>
+        <div class="rt" style="margin: 10px 20px auto auto;"><span>驳回时间：207-10-30 14:10:12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>审核结果：不通过</span></div>
+      </blockquote>
+      <h1 style="margin: 30px;">审核意见：</h1>
+      <p class="check-content">内容质量差，不予通过！</p>
+    </div>
+  {% else %}
+    <div>
+      <blockquote class="layui-elem-quote">当前资讯：{{news_title.substring(0,5)}}/
+        {% if is_show == 1 && is_audit == 3 %}已发布
+        {% elseif is_show == 2 && is_audit == 3 %}已下架
+        {% elseif is_show == 0 && is_audit == 1 %}草稿
+        {% endif %}
+        {% if is_audit == 2 && is_show == 0 %}待审核
+        {% endif %}
+        <div class="layui-btn-group" style="margin-left: 50px;">
+          {% if is_show == 1 && is_audit == 3 %}
+          <button class="layui-btn under-news" data-type="getCheckData">下架<input type="hidden" name="" value="{{news_id}}"></button>
+          {% elseif is_show == 2 && is_audit == 3 %}
+          <button class="layui-btn up-check" data-type="getCheckData">上架<input type="hidden" name="" value="{{news_id}}"></button>
+          {% elseif is_show == 0 && is_audit == 1 %}
+          <button class="layui-btn sumit-check" data-type="getCheckData">提交审核<input type="hidden" name="" value="{{news_id}}"></button>
+          {% endif %}
+          {% if is_audit == 2 && is_show == 0 %}待审核
+           <button class="layui-btn withdraw" data-type="getCheckData">撤回<input type="hidden" name="" value="{{news_id}}"></button>
+          {% endif %}
+          <a href="/news_edit?news_id={{news_id}}" class="layui-btn" data-type="getCheckLength">编辑<input type="hidden" name="" value="{{news_id}}"></a>
+          <button class="layui-btn delete" data-type="isAll">删除<input type="hidden" name="" value="{{news_id}}"></button>
+        </div>
+      </blockquote>
+    </div>
+  {% endif %}
+
+  <div class="right-main-wrap">
+    <div class="wenzhang-detail-wrap">
+      <div class="page-title">
+        <h1>{{news_title}}</h1>
+        <p><span>{{update_time}}</span>&nbsp;&nbsp;所在频道<span>{{attr_value}}</span>&nbsp;来源：<span>{{news_resource}}</span></p>
+      </div>
+      <div class="page-content">
+        {% autoescape %}
+          {{ news_content}}
+        {% endautoescape %}
+      </div>
+    </div>
+  </div>
+</body>
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="lib/layer/2.1/layer.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script type="text/javascript">
+
+//提交审核
+$( 'body').on('click', '.sumit-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要提交审核该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsAudit','GET',{'news_id': news_id,'is_audit':2},callback);
+  }, function(){
+    return;
+  })
+})
+//撤回
+$( 'body').on('click', '.withdraw',function(){
+  var _this = $(this);
+  layer.confirm('确定要撤回该资讯的审核吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+     var news_id = _this.find('input').val();
+    ajaxRequest('/newsAudit','GET',{'news_id': news_id,'is_audit':1},callback);
+  }, function(){
+    return;
+  })
+})
+//上架
+$( 'body').on('click', '.up-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要上架该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsState','GET',{'news_id': news_id,'is_show':1},callback);
+  }, function(){
+    return;
+  })
+})
+//下架
+$( 'body').on('click', '.under-news',function(){
+  var _this = $(this);
+  layer.confirm('确定要下架该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsState','GET',{'news_id': news_id,'is_show':2},callback);
+  }, function(){
+    return;
+  })
+});
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsDelete','GET',{'news_id': news_id},function(json){
+      if (json.code) {
+        window.location.href="/news_list?is_show=1&tab=1";
+      }
+    });
+  }, function(){
+    return;
+  })
+});
+
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      traditional:true,
+      success:callback
+  });
+}
+function callback(json){
+  if (json.code) {
+    window.location.reload();
+  }
+}
+</script>
+</html>

@@ -1,0 +1,146 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+  .layui-tab-content p{
+      margin-bottom: 10px;
+      text-indent: 2em;
+      line-height: 23px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <blockquote class="layui-elem-quote">数据统计</blockquote>
+
+  <div class="entrance-wrap">
+      <h1>待办事项</h1>
+      <div class="layui-row">
+        <div class="layui-col-md4" style="text-align: left;">
+          <a href="#">
+             待审核资讯({{pend_deal_news}})
+          </a>
+        </div>
+        <div class="layui-col-md4"  style="text-align: left;">
+          <a href="#">
+            待审核项目({{pend_deal_project}})
+          </a>
+        </div>
+        <div class="layui-col-md4"  style="text-align: left;">
+          <a href="#">
+            待处理订单({{pend_deal_order}})
+          </a>
+        </div>
+    </div>
+    </div>
+
+  <div class="layui-row">
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/news_total.png"><div class="rt">资讯总数<br><span>{{total_news}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/item_total.png"><div class="rt">项目总数<br><span>{{total_project}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/goods_total.png"><div class="rt">上架商品总数<br><span>{{total_goods}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/pingtai_news.png"><div class="rt">平台新闻总数<br><span>{{total_news_plat}}</span></div></a>
+    </div>
+  </div>
+  <div class="layui-row">
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/qikan_total.png"><div class="rt">期刊总数<br><span>{{total_eper}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/menu_total.png"><div class="rt">订单总数<br><span>{{total_order}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/lunbonews_total.png"><div class="rt">轮播新闻总数<br><span>{{total_ad_news}}</span></div></a>
+    </div>
+    <div class="layui-col-md3">
+      <a  class="statistics-box"><img src="user/images/banner_total.png"><div class="rt">banner总数<br><span>{{total_ad}}</span></div></a>
+    </div>
+  </div>
+  <div class="entrance-wrap">
+      <h1>快捷入口</h1>
+      <div class="layui-row">
+        <div class="layui-col-md2">
+          <a href="/news_list?is_show=1" class="entrance-item">
+            <img src="user/images/check.png"><br><br>
+            审核管理
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="" class="entrance-item">
+            <img src="user/images/market.png"><br><br>
+            商城管理
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/project_list?is_show=1" class="entrance-item">
+            <img src="user/images/hot_essay.png"><br><br>
+            热文管理
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/project_add" class="entrance-item">
+            <img src="user/images/banner_manage.png"><br><br>
+            banner管理
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/news_list?is_show=1" class="entrance-item">
+            <img src="user/images/qikan_mana.png"><br><br>
+            电子期刊管理
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="" class="entrance-item">
+            <img src="user/images/order.png"><br><br>
+            订单管理
+          </a>
+        </div>
+    </div>
+
+
+    <div class="layui-row">
+        <div class="layui-col-md2">
+          <a href="/news_list?is_show=1" class="entrance-item">
+            <img src="user/images/lbnews.png"><br><br>
+            轮播新闻管理
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="" class="entrance-item">
+            <img src="user/images/add_essay.png"><br><br>
+            新建热闻
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/project_list?is_show=1" class="entrance-item">
+            <img src="user/images/add_banner.png"><br><br>
+            新建banner
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/project_add" class="entrance-item">
+            <img src="user/images/add_lb.png"><br><br>
+            新建轮播新闻
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/project_list?is_show=1" class="entrance-item">
+            <img src="user/images/add_goods.png"><br><br>
+            新建商品
+          </a>
+        </div>
+        <div class="layui-col-md2">
+          <a href="/project_add" class="entrance-item">
+            <img src="user/images/add_qikan.png"><br><br>
+            新建电子期刊
+          </a>
+        </div>
+    </div>
+
+  </div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style type="text/css">
+body{ position: relative; background: url(user/images/login_bg.png) no-repeat; background-size: 100% 100%;}
+.form-wrap{position: absolute;left: 50%;top: 50%;margin-top: -175px;margin-left: -300px;width: 600px;height: 350px;}
+.form-wrap>h1{margin-bottom: 50px;font-size: 40px;font-weight: bold;color: #fff;text-align: center;letter-spacing: 6px;}
+.form-wrap form{margin: auto;padding: 20px 20px 20px 0px;width: 300px;border-radius: 5px;background: rgba(255,255,255,0.6);}
+.form-wrap form>h2{margin:15px auto 20px ;font-size: 18px;color: #fff;text-align: center;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+  <h1>藏羌彝文化产业走廊后台管理</h1>
+  <form class="layui-form" action="javascript:;">
+    <h2>用户登陆</h2>
+    <div class="layui-form-item">
+      <label class="layui-form-label">账号：</label>
+      <div class="layui-input-block">
+        <input type="text" name="user_name" required  lay-verify="username" placeholder="请输入用户名" autocomplete="off" class="layui-input username">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">密码：</label>
+      <div class="layui-input-block">
+        <input type="password" name="user_pwd" required lay-verify="password" placeholder="请输入密码" autocomplete="off" class="layui-input password">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="formDemo">登&nbsp;&nbsp;录</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+  if (window.top !== window.self) {
+    window.top.location = window.location;
+  }
+
+layui.use(['form','layer'], function(){
+     var form = layui.form;
+     var layer = layui.layer;
+     //验证手机号码
+     form.verify({
+        username: function(value){
+          if(value == ''){
+            return '请输入账号';
+          }
+        }
+        ,password: function(value){
+          if(value.length<5){
+            return '请输入6位以上密码';
+          }
+        }
+      });
+
+      //监听提交
+      form.on('submit(formDemo)', function(data){
+        var params = data.field || {};
+        Http({url:'/login',method:'POST'}, params,function(json){
+          console.log(json);
+          if (json.code == 2000) {
+              window.location.href = '/index';
+          } else {
+              layer.msg(json.msg,{icon:2});
+          }
+        });
+        return false;
+      });
+});
+</script>
+{% endblock %}

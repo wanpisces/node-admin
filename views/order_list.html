@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>订单列表</title>
+    <!-- 设置编码 -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="textml" charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8">
+    <meta http-equiv="Content-Type" content="IE=Edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="keywords" content="藏羌彝文化集市"/>
+    <meta name="description" content="藏羌彝文化集市"/>
+    <meta name="copyright" content="Copyright (c) 大榕树 2017"/>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <!-- CSS lib -->
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <blockquote class="layui-elem-quote">订单列表</blockquote>
+  <div class="table-body-main">
+    <div class="clearfix">
+      <div class="layui-btn-group lf">
+        <a href="/order_list?is_show=1&tab=1"  class="layui-btn {{index == 1?'true':''}}" >已处理订单</a>
+        <a href="/order_list?is_show=0&tab=2" class="layui-btn {{index == 2?'true':''}}">未处理订单</a>
+      </div>
+      <div class="layui-btn-group rt">
+        <button class="layui-btn manydelete" data-type="getCheckData">批量删除</button>
+      </div>
+    </div>
+    <table class="layui-table" id="statusTable1" lay-filter="news-list">
+      <thead>
+        <tr>
+          <th lay-data="{checkbox:true}"></th>
+          <th lay-data="{field:'id', width:80}">订单ID</th>
+          <th lay-data="{field:'clientname', width:130}">客户姓名</th>
+          <th lay-data="{field:'ordertitle', width:150}">购买商品名称</th>
+          <th lay-data="{field:'orderprice', width:120}">价格</th>
+          <th lay-data="{field:'updatetime', width:200}">更新时间</th>
+          <th lay-data="{field:'orderstatus', width:160}">订单状态</th>
+          <th lay-data="{field:'operate', width:202}">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in list %}
+        <tr>
+          <td></td>
+          <td class="newsId">{{item.order_id}}</td>
+          <td>{{item.link_name}}</td>
+          <td><a href="/order_detail?order_id={{item.order_id}}">{{item.goods_title}}</a></td>
+          <td>￥{{item.order_price}}</td>
+          <td>{{item.update_time}}</td>
+          <td>{{typeTitle}}</td>
+          {% if index == 1 %}
+          <td><a href="/order_detail?order_id={{item.order_id}}" class="edit">查看订单<input type="hidden" name="" value="{{item.order_id}}"></a><a href="javascript:;" class="delete">删除<input type="hidden" name="" value="{{item.order_id}}"></a></td>
+          {% else %}
+          <td><a href="javascript:;" class="edit">处理<input type="hidden" name="" value="{{item.order_id}}"></a><a href="javascript:;" class="delete">删除<input type="hidden" name="" value="{{item.order_id}}"></a></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="demo7"></div>
+  </div>
+</body>
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script>
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该订单吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var order_id = _this.find('input').val();
+    ajaxRequest('/orderDelete','GET',{'order_id': order_id},callback);
+  }, function(){
+    return;
+  });
+});
+
+layui.use('table', function(){
+  var table = layui.table;
+  table.init('news-list');//初始化表格
+  var arrId = [];
+  //全选
+  table.on('checkbox(news-list)', function(obj){
+    if (obj.type == 'all') {
+      if (obj.checked) {
+        $('.newsId').each(function(){
+          arrId.push($(this).html());
+        })
+      }else{
+        arrId.length = 0;
+      }
+    }else{
+      if (obj.checked) {
+        arrId.push(obj.data.id);
+      }else{
+        var _id = obj.data.id;
+        for (var i = 0; i < arrId.length; i++) {
+          if (_id == arrId[i]) {
+            arrId.splice(i, 1);
+          };
+        }
+      }
+    }
+  });
+});
+
+ //批量删除
+    $( 'body').on('click', '.manydelete',function(){
+      if (arrId.length>0) {
+        layer.confirm('确定要删除选中订单吗？', {
+          btn: ['是的','取消'] //按钮
+        }, function(){
+          ajaxRequest('/orderDelete','GET',{'order_id': JSON.stringify(arrId)},callback);
+        }, function(){
+          return;
+        });
+      }
+    });
+
+  layui.use(['laypage', 'layer'], function(){
+    var laypage = layui.laypage
+    ,layer = layui.layer;
+    var curoperate = {{index}}||1;
+    var total_num = {{total_num}};
+    var curPage = {{current_page}};
+    var url = '';
+    //完整功能
+    laypage.render({
+      elem: 'demo7'
+      ,count: total_num
+      ,limit:10
+      ,curr: curPage
+      ,layout: ['count', 'prev', 'page', 'next','skip']
+      ,jump: function(obj,first){
+        if(!first){
+          var current_page = obj.curr;
+          var page_size = obj.limit;
+          if (curoperate == 1) {
+            url = '/order_list?page_size='+page_size+'&current_page='+current_page+'&is_show=1&tab='+curoperate;
+          }else if(curoperate == 2){
+            url = '/order_list?page_size='+page_size+'&current_page='+current_page+'&is_show=0&tab='+curoperate;;
+          }
+          window.location.href = url;
+          return;
+        }
+      }
+    });
+  });
+  function callback(json){
+    if (json.code) {
+      window.location.reload();
+    }
+  }
+  function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      traditional:true,
+      success:callback
+  });
+}
+</script>
+</html>

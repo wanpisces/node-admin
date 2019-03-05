@@ -1,0 +1,88 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+    .layui-layout-body {
+        overflow: auto;
+    }
+
+    .layui-layout-admin .layui-body {
+        bottom: auto;
+    }
+    .layui-form-select dl{
+        z-index: 99999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if user_id %}
+<blockquote class="layui-elem-quote layui-text">编辑用户</blockquote>
+{% else%}
+<blockquote class="layui-elem-quote layui-text">添加用户</blockquote>
+{% endif %}
+ <form class="layui-form">   
+  <div class="layui-form-item">
+    <label class="layui-form-label">账号</label>
+    <div class="layui-input-block">
+      <input type="text" name="userName" required value="{{user_name}}" {% if user_id %} readonly="" {% endif %} lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">密码</label>
+    <div class="layui-input-block">
+      <input type="password" name="userPwd" required  lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">昵称</label>
+    <div class="layui-input-block">
+      <input type="text" name="nickname" required value="{{nickname}}"  lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  {% if user_id %}
+    <input type="hidden" name="adminType" value="{{admin_type}}">
+    <input type="hidden" name="_user_id" value="{{user_id}}">
+  {% else %}
+    <input type="hidden" name="adminType" value="1">
+  {% endif %}
+  <input type="hidden" name="role_id" value="{{role_id}}">
+  <div class="layui-form-item">
+    <div class="layui-input-block" >
+
+      <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+  
+{% block footer%}
+<script type="text/javascript"> 
+
+    layui.use(['form'], function () {
+
+        var form = layui.form, layer = layui.layer;  
+        
+        // 验证规则
+        form.verify({
+            
+        }); 
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            var params = data.field||{};// 表单数据 
+            Http({url:'/user',method:'post'},params,function(rst){
+                if(rst.code == 2000){
+                    layer.msg( rst.msg, {icon:1, time:1000},function(){
+                        location.href="/user_list?is_show=1&tab=1";
+                    });
+                 }else{
+                    layer.msg(rst.msg, {icon:2, time:2000});
+                 }
+            });
+            return false;
+        });
+    });
+</script>
+{% endblock %}

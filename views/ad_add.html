@@ -1,0 +1,315 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+  .layui-row:before, .layui-row:after{
+    display: inline !important;
+  }
+  .ad-list{
+  }
+  .ad-item-box{
+    border: 1px solid #ddd; position: relative;
+    margin:10px 0;    padding: 10px 0;
+  }
+  .btn-delete-item {
+    position: absolute; right: 0px;top: 0px;
+
+  }
+  .ad-input-box{
+    width: 80%;
+  }
+  .upload-item-box {
+        width: 90%;
+        height: 160px;
+        text-align: center;
+        margin-right: 5px;
+        float: left;
+  }
+  .upload-item-box img{
+      height: 100%;
+      width: 100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if ad_id %}
+  <blockquote class="layui-elem-quote">编辑广告</blockquote>
+{% else %}
+  <blockquote class="layui-elem-quote">添加广告</blockquote>
+{% endif %}
+  <form class="layui-form" action="" style="width:80%;">
+
+     <div class="layui-form-item">
+      <label class="layui-form-label">广告名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="ad_name" lay-verify="required|title" required placeholder="请输入广告名称" autocomplete="off" class="layui-input" value="{{ad_name}}">
+      </div>
+     </div>
+
+  {% if ad_type==1 %}
+  <!-- 轮播 -->
+      <div class="layui-form-item">
+        <label class="layui-form-label">广告图片</label>
+        <div class="layui-input-block">
+          <button class="layui-btn layui-btn-normal" id="btnAddAd"><i class="layui-icon">&#xe654;</i>添加</button>
+           <div class="ad-list">
+             {% for k,v in ad_body%}
+             <div class="layui-form ad-item-box">
+                <button class="layui-btn layui-btn-danger btn-delete-item"><i class="layui-icon">&#xe640;</i></button>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-block ad-input-box">
+                      <input type="text" name="title"  placeholder="请输入广告名称" autocomplete="off" class="layui-input" value="{{v.title}}">
+                    </div>
+                 </div>
+
+                 <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-inline">
+                      <button type="button" class="layui-btn btnUploadPic">选择图片</button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">当前只允许上传 .png .gif .jpeg .bmp 格式图片</div>
+                 </div>
+                 <div  class="layui-form-item layui-form-text" id="previewThumb">
+                   <label class="layui-form-label"></label>
+                   <div class="layui-input-block">
+                      <div class="layui-upload-list">
+                           <div class="upload-item-box">
+                                <img class="layui-upload-img" src="{{base_url}}{{v.img}}">'
+                                <input type="hidden" name="img" value='{{v.img}}'>
+                             </div>
+                      </div>
+                   </div>
+                 </div>
+
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">链接</label>
+                    <div class="layui-input-block ad-input-box">
+                      <input type="text" name="link"   placeholder="请输入广告链接地址" autocomplete="off" class="layui-input" value="{{v.link}}">
+                    </div>
+                 </div>
+              </div>
+             {% endfor %}
+            </div>
+        </div>
+      </div>
+
+{% else %}
+
+<!-- 单图 -->
+
+       <div class="layui-form-item">
+        <label class="layui-form-label">广告图片</label>
+        <div class="layui-input-block">
+           <div class="ad-list">
+             <div class="layui-form ad-item-box">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-block ad-input-box">
+                      <input type="text" name="title" placeholder="请输入广告名称" autocomplete="off" class="layui-input" value="{{ad_body.title}}">
+                    </div>
+                 </div>
+                 <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-inline">
+                      <button type="button" class="layui-btn btnUploadPic">选择图片</button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">当前只允许上传 .png .gif .jpeg .bmp 格式图片</div>
+                 </div>
+                 <div  class="layui-form-item layui-form-text" id="previewThumb">
+                   <label class="layui-form-label"></label>
+                   <div class="layui-input-block">
+                      <div class="layui-upload-list">
+                          {% if ad_body %}
+                          <div class="upload-item-box">
+                                <img class="layui-upload-img" src="{{base_url}}{{ad_body.img}}">'
+                                <input type="hidden" name="img" value='{{ad_body.img}}'>
+                          </div>
+                          {% endif %}
+                      </div>
+                   </div>
+                 </div>
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">链接</label>
+                    <div class="layui-input-block ad-input-box">
+                      <input type="text" name="link"  placeholder="请输入广告链接地址" autocomplete="off" class="layui-input" value="{{ad_body.link}}">
+                    </div>
+                 </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+
+{% endif %}
+      <div class="layui-form-item">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" id="datePicker1"  name="ad_starttime" value="{{ad_starttime}}" placeholder="yyyy-MM-dd HH:mm:ss">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">结束时间</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" id="datePicker2"  name="ad_endtime" value="{{ad_endtime}}" placeholder="yyyy-MM-dd HH:mm:ss">
+        </div>
+      </div>
+
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+         {%if ad_id %}
+            <input type="hidden" name="ad_id" value="{{ad_id}}">
+         {% endif %}
+        <button class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">取消</button>
+      </div>
+    </div>
+  </form>
+{% endblock%}
+
+
+{% block footer%}
+<script type="text/html" id="tplBanner">
+<div class="layui-form ad-item-box">
+  <button class="layui-btn layui-btn-danger btn-delete-item"><i class="layui-icon">&#xe640;</i></button>
+  <div class="layui-form-item">
+      <label class="layui-form-label">标题</label>
+      <div class="layui-input-block ad-input-box">
+        <input type="text" name="title" lay-verify="required" required placeholder="请输入广告名称" autocomplete="off" class="layui-input"">
+      </div>
+   </div>
+
+   <div class="layui-form-item layui-form-text">
+      <label class="layui-form-label">图片</label>
+      <div class="layui-input-inline">
+        <button type="button" class="layui-btn btnUploadPic">选择图片</button>
+      </div>
+      <div class="layui-form-mid layui-word-aux">当前只允许上传 .png .gif .jpeg .bmp 格式图片, 双击可删除图片</div>
+   </div>
+   <div  class="layui-form-item layui-form-text" id="previewThumb">
+     <label class="layui-form-label"></label>
+     <div class="layui-input-block">
+        <div class="layui-upload-list">
+
+        </div>
+     </div>
+   </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">链接</label>
+      <div class="layui-input-block ad-input-box">
+        <input type="text" name="link" lay-verify="required" required placeholder="请输入广告名称" autocomplete="off" class="layui-input">
+      </div>
+   </div>
+</div>
+</script>
+<script type="text/javascript">
+layui.use(['form','upload','laydate'], function(){
+  var upload = layui.upload,
+      form = layui.form,
+      layer = layui.layer,
+      laydate = layui.laydate;
+
+      // 日期picker
+    laydate.render({
+      elem: '#datePicker1'
+      ,type: 'datetime'
+    });
+    laydate.render({
+      elem: '#datePicker2'
+      ,type: 'datetime'
+    });
+
+    $('body').on('click','.btn-delete-item',function(){
+        var that = $(this);
+        layer.msg('该操作将会在提交表单后生效~', {
+            icon:3,
+            time: 0,
+            btn: ['确定', '取消'],
+            yes: function(index) {
+               that.parent().remove();
+               layer.close(index);
+            }
+        });
+        return false;
+    });
+
+    $('#btnAddAd').on('click',function(){
+        $('.ad-list').prepend($('#tplBanner').html());
+        addUploadListener();
+    });
+
+    function addUploadListener(){
+      $('.btnUploadPic').each(function(){
+          var btn = $(this);
+          if(!btn.hasClass('upload_render')){
+            btn.addClass('upload_render');
+            upload.render(initUploadParams(this,function(rst){
+                var option =
+                   '<div class="upload-item-box">'+
+                      '<img class="layui-upload-img" src="'+rst.data.base_url+rst.data.key+'">'+
+                      '<input type="hidden" name="img" value=\''+rst.data.key+'\' >'+
+                   '</div>';
+                var previewPic = btn.parents('.ad-item-box').find('.layui-upload-list');
+                previewPic.html(option);
+              }
+              ,function(rst){
+                  layer.msg(rst.msg);
+              }
+              ,{
+                exts:'jpg|png|gif|bmp|jpeg' // 只允许上传pdf
+                ,size:500*1024    // 最大允许上传的文件大小kb
+              }
+            ));
+        }
+    });
+  }
+
+    addUploadListener();
+
+    // 验证规则
+    form.verify({
+        title: function (value) {
+            if (value.length < 5) {
+                return '标题至少得5个字符啊';
+            }
+        }
+    });
+
+
+    //监听提交
+    form.on('submit(demo1)', function (data) {
+        var params = data.field||{};// 表单数据
+        var arr = []; // 图
+        $.each($('.ad-item-box'),function(k,v){
+              var item = {};
+              item.title = $(v).find("input[name=title]").val();
+              item.img = $(v).find("input[name=img]").val();
+              item.link = $(v).find("input[name=link]").val();
+              arr.push(item);
+        });
+
+        if (arr){
+          if(parseInt('{{ad_type}}') == 1){
+            params.ad_body = JSON.stringify(arr);
+          } else {
+            params.ad_body = JSON.stringify(arr[0]);
+          }
+        }
+
+        Http({url:'/ad',method:'post'},params,function(rst){
+             if(rst.code == 2000){
+                layer.msg( rst.msg, {icon:1, time:1000},function(){
+                   location.href="/ad_list?is_show=1";
+                });
+             }else{
+                layer.msg(rst.msg, {icon:2, time:2000});
+             }
+        });
+        return false;
+    });
+
+});
+
+</script>
+{% endblock %}

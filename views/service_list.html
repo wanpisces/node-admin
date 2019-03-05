@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>申报服务</title>
+    <!-- 设置编码 -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="textml" charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8">
+    <meta http-equiv="Content-Type" content="IE=Edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="keywords" content="藏羌彝文化集市"/>
+    <meta name="description" content="藏羌彝文化集市"/>
+    <meta name="copyright" content="Copyright (c) 大榕树 2017"/>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <!-- CSS lib -->
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <blockquote class="layui-elem-quote">资讯列表</blockquote>
+  <div class="table-body-main">
+    <div class="clearfix">
+      <div class="layui-btn-group lf">
+        <a  href="/service_list?is_show=0&page_size=10&tab=1" class="layui-btn {{index == 1?'true':'false'}}" data-type="getCheckData">待处理申报</a>
+        <a href="/service_list?is_show=1&page_size=10&tab=2" class="layui-btn {{index == 2?'true':'false'}}" data-type="getCheckLength">已处理申报</a>
+      </div>
+      <div class="layui-btn-group rt">
+        <button class="layui-btn mangydelete" data-type="getCheckData">批量删除</button>
+      </div>
+    </div>
+    <table class="layui-table" id="apply-service" lay-filter="apply-service">
+      <thead>
+        <tr>
+          <th lay-data="{checkbox:true}"></th>
+          <th lay-data="{field:'id', width:80}">申报ID</th>
+          <th lay-data="{field:'applytitle', width:130}">项目名称</th>
+          <th lay-data="{field:'applyArea', width:100}">所属省份</th>
+          <th lay-data="{field:'applyType', width:120}">项目类型</th>
+          <th lay-data="{field:'applyMoney', width:130}">拟申报资金名称</th>
+          <th lay-data="{field:'applyName', width:80}">联系人</th>
+          <th lay-data="{field:'applyLink', width:100}">联系方式</th>
+          <th lay-data="{field:'applyTime', width:140}">申请时间</th>
+          <th lay-data="{field:'applyStatus', width:100}">处理状态</th>
+          <th lay-data="{field:'operate', width:172}">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in list %}
+        <tr>
+          <td></td>
+          <td class="applyId">{{item.service_project_id}}</td>
+          <td>{{item.project_title}}</td>
+          {% if item.role_id == 0 %}
+          <td>平台</td>
+          {% elseif item.role_id == 1 %}
+          <td>四川</td>
+          {% elseif item.role_id == 2 %}
+          <td>云南</td>
+          {% elseif item.role_id == 3 %}
+          <td>贵州</td>
+          {% elseif item.role_id == 4 %}
+          <td>青海</td>
+          {% elseif item.role_id == 5 %}
+          <td>西藏</td>
+          {% elseif item.role_id == 6 %}
+          <td>甘肃</td>
+          {% elseif item.role_id == 7 %}
+          <td>山西</td>
+          {% else %}
+          <td>未知</td>
+          {% endif %}
+          <td>
+            {% if item.project_industry == 1 %}
+              项目行业分类
+            {% elseif item.project_industry == 2 %}
+              平台资讯分类
+            {% elseif item.project_industry == 3 %}
+              地区资讯分类
+            {% elseif item.project_industry == 4 %}
+              商品分类
+             {% endif %}
+          </td>
+          <td>{{item.project_funds_name}}</td>
+          <td>{{item.link_name}}</td>
+          <td>{{item.link_tel}}</td>
+          <td>{{item.create_time}}</td>
+          <td>{{typeTitle}}</td>
+          {% if index == 2 %}
+          <td><a href="javascript:;" class="delete">删除<input type="hidden" name="" value="{{item.service_project_id}}"></a></td>
+          {% else %}
+          <td><a href="javascript:;" class="sumit-check">处理<input type="hidden" name="" value="{{item.service_project_id}}"></a><a href="javascript:;" class="delete">删除<input type="hidden" name="" value="{{item.service_project_id}}"></a></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="demo7"></div>
+  </div>
+</body>
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script>
+  var arrId = [];
+  //处理
+$( 'body').on('click', '.sumit-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要处理服务申请吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var service_project_id = _this.find('input').val();
+    ajaxRequest('/serviceState','GET',{'service_project_id': service_project_id,'is_show':1},callback)
+  }, function(){
+    return;
+  });
+})
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该服务申请吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var service_project_id = _this.find('input').val();
+    ajaxRequest('/serviceDelete','GET',{'service_project_id': service_project_id},callback);
+  }, function(){
+    return;
+  });
+})
+
+//批量删除
+$( 'body').on('click', '.mangydelete',function(){
+  if (arrId.length>0) {
+    layer.confirm('确定要删除选中服务申请吗？', {
+      btn: ['是的','取消'] //按钮
+    }, function(){
+      ajaxRequest('/serviceDelete','GET',{'service_project_id': arrId},callback)
+    }, function(){
+      return;
+    });
+  }
+});
+layui.use('table', function(){
+  var table = layui.table;
+  table.init('apply-service');//初始化表格
+
+  //全选
+  table.on('checkbox(apply-service)', function(obj){
+    if (obj.type == 'all') {
+      if (obj.checked) {
+        $('.newsId').each(function(){
+          arrId.push($(this).html());
+        })
+      }else{
+        arrId.length = 0;
+      }
+    }else{
+      if (obj.checked) {
+        arrId.push(obj.data.id);
+      }else{
+        var _id = obj.data.id;
+        for (var i = 0; i < arrId.length; i++) {
+          if (_id == arrId[i]) {
+            arrId.splice(i, 1);
+          };
+        }
+      }
+    }
+  });
+
+});
+  layui.use(['laypage', 'layer'], function(){
+    var laypage = layui.laypage
+    ,layer = layui.layer;
+     var curoperate = {{index}}||1;
+    var total_num = {{total_num}};
+    var curPage = {{current_page}};
+    var url = '';
+    //完整功能
+    laypage.render({
+      elem: 'demo7'
+      ,count: total_num
+      ,limit:10
+      ,curr: curPage
+      ,layout: ['count', 'prev', 'page', 'next','skip']
+      ,jump: function(obj,first){
+        if(!first){
+          var current_page = obj.curr;
+          var current_page = obj.curr;
+          var page_size = obj.limit;
+          if (curoperate == 1) {
+            url = '/periodicals_list?page_size='+page_size+'&current_page='+current_page+'&is_show=1&tab='+curoperate;
+          }else if(curoperate == 2){
+            url = '/periodicals_list?page_size='+page_size+'&current_page='+current_page+'&is_show=0&tab='+curoperate;
+          }
+          window.location.href = url;
+          return;
+        }
+      }
+    });
+  });
+
+   function callback(json){
+    if (json.code) {
+      layer.msg('操作成功');
+      window.location.reload();
+    }
+  }
+  function ajaxRequest(url,type,data,callback){
+    $.ajax({
+        url:url,
+        type: type,
+        data:data,
+        traditional:true,
+        success:callback
+    });
+  }
+</script>
+</html>

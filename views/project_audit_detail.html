@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>项目审核详情</title>
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <div class="loc-link-wrap">
+    <a href="/project_audit?is_audit=2&tab=1">项目审核列表</a>&gt;&nbsp;&nbsp;<a href="">项目审核详情</a>
+  </div>
+  {% if is_audit == 2 %}
+  <div>
+    <blockquote class="layui-elem-quote">当前项目：{{project_title}}/待审
+      <div class="layui-btn-group" style="margin-left: 50px;">
+        <button class="layui-btn news_audit_up" data-type="getCheckData">通过<input type="hidden" name="" value="{{project_id}}"></button> <button class="layui-btn news_audit_refuse" data-type="getCheckData">驳回<input type="hidden" name="" value="{{project_id}}"></button>
+      </div>
+    </blockquote>
+  </div>
+  {% elseif is_audit == 3 %}
+   <div>
+    <blockquote class="layui-elem-quote">当前项目：{{project_title}}/通过
+      <div class="rt" style="margin: 10px 20px auto auto;"><span>通过时间：207-10-30 14:10:12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>审核结果：通过</span></div>
+    </blockquote>
+  </div>
+  {% elseif is_audit == 4 %}
+  <div>
+    <blockquote class="layui-elem-quote">当前项目：{{project_title}}/不通过
+      <div class="rt" style="margin: 10px 20px auto auto;"><span>通过时间：207-10-30 14:10:12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>审核结果：不通过</span></div>
+    </blockquote>
+  </div>
+  <h1 style="margin: 30px;">驳回理由：</h1>
+  <p class="check-content">
+    {{project_mark}}
+  </p>
+  {% endif %}
+  <div class="xiangmu-wrap">
+    <div class="xm-left">
+      <div class="xm-line">
+        <table class="xm-detail-wrap">
+          <tr>
+            <th colspan="2">项目基本信息</th>
+          </tr>
+          <tr>
+            <td>项目介绍</td>
+            <td>{{project_content}}</td>
+          </tr>
+          <tr>
+            <td>项目图片</td>
+            <td>
+              {% for item in project_pic%}
+                <img src="{{base_url}}{{item}}">
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <td>项目视频</td>
+            <td>
+              {% if !project_video %}
+                {% for item in  project_video%}
+                  <video width="260" height="180" src="{{base_url}}{{item}}"></video>
+                {% endfor %}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>盈利模式及经济效益预测</td>
+            <td>{{project_profit}}</td>
+          </tr>
+          <tr>
+            <td>实施地区</td>
+            <td>{{project_implementation_area}}</td>
+          </tr>
+          <tr>
+            <td>项目发布时间</td>
+            <td>{{project_time}}</td>
+          </tr>
+          <tr>
+            <td>实施城市</td>
+            <td>{{project_implementation_city}}</td>
+          </tr>
+          <tr>
+            <td>所属行业</td>
+            <td>{{project_industry_name}}</td>
+          </tr>
+          <tr>
+            <td>项目阶段</td>
+            <td>{{project_stage}}</td>
+          </tr>
+          <tr>
+            <td>合作方式</td>
+            <td>{{project_cooperation}}</td>
+          </tr>
+          <tr>
+            <td>资金用途</td>
+            <td>{{project_funds}}</td>
+          </tr>
+          <tr>
+            <td>接受资本类型</td>
+            <td>{{project_funds_type}}</td>
+          </tr>
+          <tr>
+            <td>投资总额</td>
+            <td>{{project_funds_all}}</td>
+          </tr>
+          <tr>
+            <td>尚缺资金</td>
+            <td>{{project_funds_shortage}}</td>
+          </tr>
+          <tr>
+            <td>是否接受委托融资</td>
+            {% if project_funds_accept == 1%}
+            <td>是</td>
+            {% elseif project_funds_accept == 0%}
+            <td>否</td>
+            {% endif%}
+          </tr>
+          <tr>
+            <td>单位/个人名称</td>
+            <td>{{project_company}}</td>
+          </tr>
+          <tr>
+            <td>法定代表人</td>
+            <td>{{project_representative}}</td>
+          </tr>
+          <tr>
+            <td>负责人</td>
+            <td>{{project_leader}}</td>
+          </tr>
+          <tr>
+            <td>网址</td>
+            <td>{{project_url}}</td>
+          </tr>
+          <tr>
+            <td>联系电话</td>
+            <td>{{project_tel}}</td>
+          </tr>
+          <tr>
+            <td>E-mail</td>
+            <td>{{project_email}}</td>
+          </tr>
+          <tr>
+            <td>邮编</td>
+            <td>{{project_zipcode}}</td>
+          </tr>
+          <tr>
+            <td>传真</td>
+            <td>{{project_fax}}</td>
+          </tr>
+          <tr>
+            <td>通讯地址</td>
+            <td>{{project_address}}</td>
+          </tr>
+          <tr>
+            <td>单位简介</td>
+            <td>{{project_company_desc}}</td>
+          </tr>
+          <tr>
+            <td>备注</td>
+            <td>{{project_mark}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="lib/layer/2.1/layer.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script type="text/javascript">
+
+
+  //通过
+$( 'body').on('click', '.news_audit_up',function(){
+  var _this = $(this);
+  console.log('asdcasd');
+  layer.confirm('确定要通过该项目审核吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectAudit','GET',{'project_id': project_id,'is_audit':3},callback)
+  }, function(){
+    return;
+  });
+})
+
+//驳回
+$( 'body').on('click', '.news_audit_refuse',function(){
+  var _this = $(this);
+  layer.config({
+    extend: 'extend/layer.ext.js'
+  });
+  layer.prompt({
+      title: '驳回原因',
+      formType: 2,// prompt风格，支持0-2
+      btn: ['确定', '取消']
+  }, function(content) {
+      var project_id = _this.find('input').val();
+      ajaxRequest('/projectAudit','GET',{'project_id': project_id,'is_audit':4,audit_remart:content},callback)
+  });
+})
+
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该项目吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectDelete','GET',{'project_id': project_id},callback)
+  }, function(){
+    return;
+  });
+});
+
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      traditional:true,
+      success:callback
+  });
+}
+function callback(json){
+  window.location.reload();
+}
+</script>
+
+</body>
+</html>

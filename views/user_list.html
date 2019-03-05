@@ -1,0 +1,210 @@
+
+{% extends './public/layout.html' %}
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+  <blockquote class="layui-elem-quote">用户列表</blockquote>
+  <div class="table-body-main">
+    <div class="clearfix">
+      <div class="layui-btn-group lf">
+        <a href="/user_list?is_show=1&tab=1"  class="layui-btn {{index == 1?'true':''}}">已启用</a>
+        <a href="/user_list?is_show=0&tab=2" class="layui-btn {{index == 2?'true':''}}">已停用</a>
+      </div>
+      <div class="layui-btn-group rt">
+        <button class="layui-btn manydelete" data-type="getCheckData">批量删除</button>
+        <a href="/user_add" class="layui-btn" style="color: #fff;">新建账户</a>
+      </div>
+    </div>
+    <table class="layui-table" id="statusTable1" lay-filter="news-list">
+      <thead>
+        <tr>
+          <th lay-data="{checkbox:true}"></th>
+          <th lay-data="{field:'id', width:80}">账户ID</th>
+          <th lay-data="{field:'newstitle', width:220}">用户名称</th>
+          <th lay-data="{field:'newsarea', width:120}">账号</th>
+          <th lay-data="{field:'ethnic', width:120}">角色</th>
+          <th lay-data="{field:'userprice', width:122}">加入时间</th>
+          <th lay-data="{field:'userstatus', width:120}">是否已启用</th>
+          <th lay-data="{field:'operate', width:260}">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in list %}
+        <tr>
+          <td></td>
+          <td class="newsId">{{item.user_id}}</td>
+          <td>{{item.nickname}}</td>
+          <td>{{item.user_name}}</td>
+          <td>{{item.role_name}}</td>
+          <td>{{item.create_time}}</td>
+          <td>
+            {% if item.is_show == 1%}
+              是
+            {% else%}
+              否
+            {% endif %}
+          </td>
+          <td>
+            {% if user.user_id != item.user_id && user.admin_type == 0%}
+                {% if index == 1 %}
+                  <a href="javascript:;" class="under-news">停用<input type="hidden" name="" value="{{item.user_id}}"></a>
+                {% else %}
+                  <a href="javascript:;" class="sumit-check">启用<input type="hidden" name="" value="{{item.user_id}}"></a>
+                {% endif %}
+                {% if item.admin_type ==1  %}
+                <a href="javascript:;" class="delete">删除<input type="hidden" name="" value="{{item.user_id}}"></a>
+                {% endif %}
+            {% endif %}
+                <a href="/user_edit?_user_id={{item.user_id}}">编辑</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="demo7"></div>
+  </div>
+
+{% endblock %}
+
+{% block footer%}
+<script type="text/javascript">
+  //启用
+$( 'body').on('click', '.sumit-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要启用该用户吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var user_id = _this.find('input').val();
+    ajaxRequest('/userState','GET',{'_user_id': user_id,'is_show':1},callback)
+  }, function(){
+    return;
+  });
+})
+
+//停用
+$( 'body').on('click', '.under-news',function(){
+  var _this = $(this);
+  layer.confirm('确定要停用该用户吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+  var user_id = _this.find('input').val();
+  ajaxRequest('/userState','GET',{'_user_id': user_id,'is_show':0},callback)
+  }, function(){
+    return;
+  });
+});
+
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该用户吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var user_id = _this.find('input').val();
+  ajaxRequest('/userDelete','GET',{'_user_id': user_id},callback)
+  }, function(){
+    return;
+  });
+});
+
+
+
+layui.use('form', function(){
+  var form = layui.form;
+   form.verify({
+     required: function(value){
+        if(value == ''){
+          return '必填项不能为空';
+        }
+      }
+    });
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    console.log(data.field);
+    ajaxRequest('/addUser','POST',{data: data.field},callback);
+    return false;
+  });
+});
+
+function callback(json){
+  if (json.code) {
+    window.location.reload();
+  }
+}
+
+var arrId = [];
+layui.use('table', function(){
+  var table = layui.table;
+  table.init('news-list');//初始化表格
+
+  //全选
+  table.on('checkbox(news-list)', function(obj){
+    if (obj.type == 'all') {
+      if (obj.checked) {
+        $('.newsId').each(function(){
+          arrId.push($(this).html());
+        })
+      }else{
+        arrId.length = 0;
+      }
+    }else{
+      if (obj.checked) {
+        arrId.push(obj.data.id);
+      }else{
+        var _id = obj.data.id;
+        for (var i = 0; i < arrId.length; i++) {
+          if (_id == arrId[i]) {
+            arrId.splice(i, 1);
+          }
+        }
+      }
+    }
+  });
+});
+//批量删除
+  $( 'body').on('click', '.manydelete',function(){
+    if (arrId.length>0) {
+      layer.confirm('确定要删除选中用户吗？', {
+        btn: ['是的','取消'] //按钮
+      }, function(){
+        ajaxRequest('/userDelete','GET',{'_user_id': JSON.stringify(arrId)},callback);
+      }, function(){
+        return;
+      });
+    }
+  });
+  layui.use(['laypage', 'layer'], function(){
+    var laypage = layui.laypage
+    ,layer = layui.layer;
+    var curoperate = {{index}};
+    var total_num = {{total_num}};
+    var curPage = {{current_page}};
+    var url = '';
+    //完整功能
+    laypage.render({
+      elem: 'demo7'
+      ,count: total_num
+      ,limit:10
+      ,curr: curPage
+      ,layout: ['count', 'prev', 'page', 'next','skip']
+      ,jump: function(obj,first){
+        if(!first){
+          var current_page = obj.curr;
+          var page_size = obj.limit;
+          if (curoperate == 1) {
+            url = '/user_list?page_size='+page_size+'&current_page='+current_page+'&is_show=1&tab='+curoperate;
+          }else{
+            url = '/user_list?page_size='+page_size+'&current_page='+current_page+'&is_show=0&tab='+curoperate;
+          }
+          window.location.href = url;
+          return;
+        }
+      }
+    });
+  });
+
+
+</script>
+{%  endblock %}

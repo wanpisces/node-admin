@@ -1,0 +1,160 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+    .layui-layout-body {
+        overflow: auto;
+    }
+
+    .layui-layout-admin .layui-body {
+        bottom: auto;
+    }
+    .layui-form-select dl{
+        z-index: 99999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if news_id %}
+<blockquote class="layui-elem-quote layui-text">编辑资讯</blockquote>
+{% else%}
+<blockquote class="layui-elem-quote layui-text">添加资讯</blockquote>
+{% endif %}
+<form class="layui-form" action="" style="width: 90%;">
+      <div class="layui-form-item">
+        <label class="layui-form-label">文章归属</label>
+        <div class="layui-input-block">
+
+          <select name="role_id"  lay-filter="selectRole">
+            {% if is_administrator %}
+                <option value="{{role_id}}"></option>
+                <option value="0" {% if role_id==0 %} selected {% endif %} >平台</option>
+                <option value="1" {% if role_id==1 %} selected {% endif %} >四川</option>
+                <option value="2" {% if role_id==2 %} selected {% endif %} >云南</option>
+                <option value="3" {% if role_id==3 %} selected {% endif %} >贵州</option>
+                <option value="4" {% if role_id==4 %} selected {% endif %} >青海</option>
+                <option value="5" {% if role_id==5 %} selected {% endif %} >西藏</option>
+                <option value="6" {% if role_id==6 %} selected {% endif %} >甘肃</option>
+                <option value="7" {% if role_id==7 %} selected {% endif %} >山西</option>
+            {% else %}
+                {% if role_id==1 %}<option value="1"  selected>四川</option>{% endif %}
+                {% if role_id==2 %}<option value="2"  selected>云南</option>{% endif %}
+                {% if role_id==3 %}<option value="3"  selected>贵州</option>{% endif %}
+                {% if role_id==4 %}<option value="4"  selected>青海</option>{% endif %}
+                {% if role_id==5 %}<option value="5"  selected>西藏</option>{% endif %}
+                {% if role_id==6 %}<option value="6"  selected>甘肃</option>{% endif %}
+                {% if role_id==7 %}<option value="7"  selected>山西</option>{% endif %}
+            {% endif %}
+          </select>
+        </div>
+      </div>
+
+     <div class="layui-form-item">
+        <label class="layui-form-label">资讯分类</label>
+        <div class="layui-input-block">
+            <select id="selectFront" name="attr_id" lay-filter="attr">
+                <option value=""></option>
+                <optgroup>
+                  <option value="16" {% if attr_id==16 %} selected {% endif %}>政策法规</option>
+                  <option value="17" {% if attr_id==17 %} selected {% endif %}>地方资讯</option>
+                  <!-- <option value="18" {% if attr_id==18 %} selected {% endif %}>园区发展</option> -->
+                  <option value="19" {% if attr_id==19 %} selected {% endif %}>线上走廊</option>
+                </optgroup>
+                {% if is_administrator %}
+                <optgroup label="平台资讯">
+                    <option value="13" {% if attr_id==13 %} selected {% endif %}>学术前沿</option>
+                    <option value="14" {% if attr_id==14 %} selected {% endif %}>申报解读</option>
+                    <option value="15" {% if attr_id==15 %} selected {% endif %}>要闻列表</option>
+                </optgroup>
+                {% endif %}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">资讯标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="news_title" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                   class="layui-input" value="{{news_title}}">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">文章简介</label>
+        <div class="layui-input-block">
+            <textarea  name="news_desc" autocomplete="off" value="{{news_desc}}" placeholder="请输入文章简介" class="layui-textarea"></textarea>
+        </div>
+    </div>
+     <div class="layui-form-item">
+        <label class="layui-form-label">文章来源</label>
+        <div class="layui-input-block">
+            <input type="text" name="news_resource" autocomplete="off" placeholder="请输入来源"
+                   class="layui-input" value="{{news_resource}}">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">文章内容</label>
+        <div class="layui-input-block">
+            <script id="editor" style="width: 99.9%;height: 480px;">{%autoescape%}{{news_content}}{%endautoescape%}</script>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {%if news_id %}
+            <input type="hidden" name="news_id" value="{{news_id}}">
+            {% endif %}
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block footer%}
+<!-- ueditor -->
+<script type="text/javascript" src="lib/ueditor/1.4.3/ueditor.config.js"></script>
+<script type="text/javascript" src="lib/ueditor/1.4.3/ueditor.all.min.js"></script>
+<script type="text/javascript" src="lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript">
+
+    // 初始化编辑器
+    var ue = UE.getEditor('editor');
+
+    layui.use(['form'], function () {
+
+        var form = layui.form, layer = layui.layer;
+
+
+
+        // 验证规则
+        form.verify({
+            title: function (value) {
+                if (value.length < 5) {
+                    return '标题至少得5个字符啊';
+                }
+            }
+        });
+
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            var params = data.field||{};// 表单数据
+            var newsType = '{{news_type}}'||1;
+            params.news_content = ue.getContent();
+            delete params.editorValue;
+            Http({url:'/news',method:'post'},params,function(rst){
+                if(rst.code == 2000){
+                    layer.msg( rst.msg, {icon:1, time:1000},function(){
+                        location.href="/news_list?is_show=0&is_audit=1&tab=5&news_type="+newsType;
+                    });
+                 }else{
+                    layer.msg(rst.msg, {icon:2, time:2000});
+                 }
+            });
+            return false;
+        });
+    });
+</script>
+{% endblock %}

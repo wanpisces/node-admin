@@ -1,0 +1,117 @@
+{% extends './public/layout.html' %}
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">藏羌彝后台管理</div>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    {{nickname}}
+                </a>
+            </li>
+            <li class="layui-nav-item"><a href="javascript:;" onclick="window.open('http://qzy.darongshutech.com/')">网站首页</a></li>
+            <li class="layui-nav-item"><a href="javascript:;" class="logout">退出</a></li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed layui-nav-itemed">
+                    {% if is_administrator %}
+                    <a href="/statistics_A">数据统计</a>
+                    {% else %}
+                    <a href="/statistics_B">数据统计</a>
+                    {% endif %}
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">内容管理</a>
+                    <dl class="layui-nav-child">
+                        {% if is_administrator %}
+                        <dd><a href="/news_list_A?is_show=1&news_type=1&page_size=10&tab=1">平台资讯</a></dd>
+                        {% endif %}
+                        <dd><a href="/news_list?is_show=1&news_type=2&page_size=10&tab=1">资讯列表</a></dd>
+                        <dd><a href="/project_list?is_show=1&page_size=10&tab=1">项目列表</a></dd>
+                        {% if is_administrator %}
+                        <dd><a href="/eper_list?is_show=1&tab=1">期刊列表</a></dd>
+                        {% endif%}
+                    </dl>
+                </li>
+                {% if is_administrator %}
+                <li class="layui-nav-item">
+                    <a href="javascript:;">审核管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/news_audit?is_audit=2&tab=1">资讯审核</a></dd>
+                        <dd><a href="/project_audit?is_audit=2&tab=1">项目审核</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;">云端集市</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/goods_list?is_show=1&page_size=10&tab=1">商品列表</a></dd>
+                        <dd><a href="/order_list?is_show=1&page_size=10&tab=1">订单列表</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">平台管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/ad_list?is_show=1&page_size=10&tab=1">广告管理</a></dd>
+                        <dd><a href="/service_list?is_show=0&page_size=10&tab=1">申报服务</a></dd>
+                        <dd><a href="/user_list?is_show=1&tab=1">用户列表</a></dd>
+                    </dl>
+                </li>
+                {%else%}
+                 <li class="layui-nav-item">
+                    <a href="/user_list?is_show=1&tab=1">用户列表</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+        <div class="iframe-box">
+            {% if is_administrator %}
+                <iframe src="/statistics_A" id="iframe" name="iframe"></iframe>
+            {%else%}
+                <iframe src="/statistics_B" id="iframe" name="iframe"></iframe>
+            {% endif %}
+        </div>
+    </div>
+    <!-- 底部固定区域 -->
+    <div class="layui-footer">
+        主办单位：四川文博文化创意产业研究中心&人民日报数字四川  技术支持：四川大榕树数据技术有限公司
+    </div>
+</div>
+{% endblock %}
+
+{% block  footer %}
+<script type="text/javascript">
+$('a').attr('target','iframe');
+layui.use('element', function () {
+    var element = layui.element;
+});
+
+//退出
+$('.logout').click(function(){
+    ajaxRequest('/logout','POST',{},callback)
+})
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      success:callback
+  });
+}
+function callback(json){
+  if (json.code) {
+    window.location.href='/';
+  }
+}
+</script>
+{%  endblock %}

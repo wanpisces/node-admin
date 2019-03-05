@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>项目库详情</title>
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <div class="loc-link-wrap">
+    <a href="/project_list?is_show=1&tab=1">项目列表</a>&gt;&nbsp;&nbsp;<a href="">项目详情</a>
+  </div>
+  {% if is_audit == 4 && is_show == 0 %}
+  <div>
+    <blockquote class="layui-elem-quote">当前项目：数字出版业务/未通过
+      <div class="layui-btn-group" style="margin-left: 50px;">
+        <button class="layui-btn" data-type="getCheckData">编辑</button>
+      </div>
+      <div class="rt" style="margin: 10px 20px auto auto;"><span>驳回时间：207-10-30 14:10:12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>审核结果：不通过</span></div>
+    </blockquote>
+    <h1 style="margin: 30px;">审核意见：</h1>
+    <p class="check-content">内容质量差，不予通过！</p>
+  </div>
+  {% else %}
+  <div>
+    <blockquote class="layui-elem-quote">当前项目：{{project_title}}/
+      {% if is_show == 1 && is_audit == 3 %}已发布
+        {% elseif is_show == 2 && is_audit ==3 %}已下架
+        {% elseif is_show == 0 && is_audit == 1 %}草稿
+        {% endif %}
+        {% if is_audit == 2 && is_show == 0 %}待审核
+        {% endif %}
+      <div class="layui-btn-group" style="margin-left: 50px;">
+          {% if is_show == 1 && is_audit == 3 %}
+          <button class="layui-btn under-project" data-type="getCheckData">下架<input type="hidden" name="" value="{{project_id}}"></button>
+          {% elseif is_show == 2 && is_audit ==3 %}
+          <button class="layui-btn up-check" data-type="getCheckData">上架<input type="hidden" name="" value="{{project_id}}"></button>
+          {% elseif is_show == 0 && is_audit == 1 %}
+          <button class="layui-btn sumit-check" data-type="getCheckData">提交审核<input type="hidden" name="" value="{{project_id}}"></button>
+          {% endif %}
+          {% if is_audit == 2 && is_show == 0 %}待审核
+           <button class="layui-btn withdraw" data-type="getCheckData">撤回<input type="hidden" name="" value="{{project_id}}"></button>
+          {% endif %}
+        <a href="/project_edit?project_id={{project_id}}" class="layui-btn" data-type="getCheckLength">编辑<input type="hidden" name="" value="{{project_id}}"></a>
+        <button class="layui-btn delete" data-type="isAll">删除<input type="hidden" name="" value="{{project_id}}"></button>
+      </div>
+    </blockquote>
+  </div>
+  {% endif %}
+  <div class="xiangmu-wrap">
+    <div class="xm-left">
+      <div class="xm-line">
+        <div class="xm-title"><p>{{project_title}}</p></div>
+        <table class="xm-detail-wrap">
+          <tr>
+            <th colspan="2">项目基本信息</th>
+          </tr>
+          <tr>
+            <td>项目介绍</td>
+            <td>{{project_content}}</td>
+          </tr>
+          <tr>
+            <td>项目图片</td>
+            <td>
+              {% for item in project_pic%}
+                <img src="{{base_url+item}}">
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <td>项目视频</td>
+            <td>
+              {% for item in project_video%}
+                <video src="{{base_url+item}}"></video>
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <td>盈利模式及经济效益预测</td>
+            <td>{{project_profit}}</td>
+          </tr>
+          <tr>
+            <td>实施地区</td>
+            <td>{{project_implementation_area}}</td>
+          </tr>
+          <tr>
+            <td>项目发布时间</td>
+            <td>{{project_time}}</td>
+          </tr>
+          <tr>
+            <td>实施城市</td>
+            <td>{{project_implementation_city}}</td>
+          </tr>
+          <tr>
+            <td>所属行业</td>
+            <td>{{project_industry_name}}</td>
+          </tr>
+          <tr>
+            <td>项目阶段</td>
+            <td>{{project_stage}}</td>
+          </tr>
+          <tr>
+            <td>合作方式</td>
+            <td>{{project_cooperation}}</td>
+          </tr>
+          <tr>
+            <td>资金用途</td>
+            <td>{{project_funds}}</td>
+          </tr>
+          <tr>
+            <td>接受资本类型</td>
+            <td>{{project_funds_type}}</td>
+          </tr>
+          <tr>
+            <td>投资总额</td>
+            <td>{{project_funds_all}}</td>
+          </tr>
+          <tr>
+            <td>尚缺资金</td>
+            <td>{{project_funds_shortage}}</td>
+          </tr>
+          <tr>
+            <td>是否接受委托融资</td>
+            {% if project_funds_accept == 1%}
+            <td>是</td>
+            {% elseif project_funds_accept == 0%}
+            <td>否</td>
+            {% endif%}
+          </tr>
+          <tr>
+            <td>单位/个人名称</td>
+            <td>{{project_company}}</td>
+          </tr>
+          <tr>
+            <td>法定代表人</td>
+            <td>{{project_representative}}</td>
+          </tr>
+          <tr>
+            <td>负责人</td>
+            <td>{{project_leader}}</td>
+          </tr>
+          <tr>
+            <td>网址</td>
+            <td>{{project_url}}</td>
+          </tr>
+          <tr>
+            <td>联系电话</td>
+            <td>{{project_tel}}</td>
+          </tr>
+          <tr>
+            <td>E-mail</td>
+            <td>{{project_email}}</td>
+          </tr>
+          <tr>
+            <td>邮编</td>
+            <td>{{project_zipcode}}</td>
+          </tr>
+          <tr>
+            <td>传真</td>
+            <td>{{project_fax}}</td>
+          </tr>
+          <tr>
+            <td>通讯地址</td>
+            <td>{{project_address}}</td>
+          </tr>
+          <tr>
+            <td>单位简介</td>
+            <td>{{project_company_desc}}</td>
+          </tr>
+          <tr>
+            <td>备注</td>
+            <td>{{project_mark}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="lib/layer/2.1/layer.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script type="text/javascript">
+  //提交审核
+$( 'body').on('click', '.sumit-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除交审核该项目吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectAudit','GET',{'project_id': project_id,'is_audit':2},callback);
+  }, function(){
+    return;
+  });
+})
+//撤回
+$( 'body').on('click', '.withdraw',function(){
+  var _this = $(this);
+  layer.confirm('确定要撤回该项目的审核吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectAudit','GET',{'project_id': project_id,'is_audit':1},callback);
+  }, function(){
+    return;
+  });
+})
+//上架
+$( 'body').on('click', '.up-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要上架该项目吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectState','GET',{'project_id': project_id,'is_show':1},callback);
+  }, function(){
+    return;
+  });
+})
+//下架
+$( 'body').on('click', '.under-project',function(){
+  var _this = $(this);
+  layer.confirm('确定要下架该项目吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectState','GET',{'project_id': project_id,'is_show':2},callback);
+  }, function(){
+    return;
+  });
+});
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该项目吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var project_id = _this.find('input').val();
+    ajaxRequest('/projectDelete','GET',{'project_id': project_id},function(json){
+      if (json.code) {
+        window.location.href="/project_list?is_show=1&tab=1";
+      }
+    });
+  }, function(){
+    return;
+  });
+});
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      traditional:true,
+      success:callback
+  });
+}
+function callback(json){
+  if (json.code) {
+    window.location.reload();
+  }
+}
+</script>
+
+</body>
+</html>

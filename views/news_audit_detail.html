@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>资讯审核详情</title>
+    <!-- 设置编码 -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="textml" charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8">
+    <meta http-equiv="Content-Type" content="IE=Edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="keywords" content="藏羌彝文化集市"/>
+    <meta name="description" content="藏羌彝文化集市"/>
+    <meta name="copyright" content="Copyright (c) 大榕树 2017"/>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <!-- CSS lib -->
+    <link href="user/src/css/layui.css"  rel="stylesheet" >
+    <link rel="stylesheet" type="text/css" href="user/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="user/css/main.css" />
+</head>
+<body>
+  <div class="loc-link-wrap">
+    <a href="/news_audit?is_audit=2&tab=1">资讯列表</a>
+    &gt;&nbsp;&nbsp;<a href="javascript:;">资讯详情</a>
+  </div>
+  {% if is_audit == 2 %}
+  <div>
+    <blockquote class="layui-elem-quote">当前项目：{{news_title}}/待审
+      <div class="layui-btn-group" style="margin-left: 50px;">
+        <button class="layui-btn news_audit_up" data-type="getCheckData">通过<input type="hidden" name="" value="{{news_id}}"></button> <button class="layui-btn news_audit_refuse" data-type="getCheckData">驳回<input type="hidden" name="" value="{{news_id}}"></button>
+      </div>
+    </blockquote>
+  </div>
+  {% elseif is_audit == 3 %}
+   <div>
+    <blockquote class="layui-elem-quote">当前项目：{{news_title}}/通过
+      <div class="rt" style="margin: 10px 20px auto auto;"><span>通过时间：207-10-30 14:10:12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>审核结果：通过</span></div>
+    </blockquote>
+  </div>
+  {% elseif is_audit == 4 %}
+  <div>
+    <blockquote class="layui-elem-quote">当前项目：{{news_title}}/不通过
+      <div class="rt" style="margin: 10px 20px auto auto;"><span>通过时间：207-10-30 14:10:12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>审核结果：不通过</span></div>
+    </blockquote>
+  </div>
+  <h1 style="margin: 30px;">驳回理由：</h1>
+  <p class="check-content">
+    {{news_mark}}
+  </p>
+  {% endif %}
+
+  <div class="right-main-wrap">
+    <div class="wenzhang-detail-wrap">
+      <div class="page-title">
+        <h1>{{news_title}}</h1>
+        <p><span>{{update_time}}</span>&nbsp;&nbsp;所在频道<span>{{attr_value}}</span>&nbsp;来源：<span>{{news_resource}}</span></p>
+      </div>
+      <div class="page-content">
+        {% autoescape %}
+          {{ news_content}}
+        {% endautoescape %}
+      </div>
+    </div>
+  </div>
+</body>
+<script src="user/js/jquery-1.11.1.min.js"></script>
+<script src="user/src/layui.js" charset="utf-8"></script>
+<script src="lib/layer/2.1/layer.js" charset="utf-8"></script>
+<script src="user/js/main.js"></script>
+<script type="text/javascript">
+
+//提交审核
+$( 'body').on('click', '.sumit-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要提交审核该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsAudit','GET',{'news_id': news_id,'is_audit':2},callback);
+  }, function(){
+    return;
+  })
+})
+//撤回
+$( 'body').on('click', '.withdraw',function(){
+  var _this = $(this);
+  layer.confirm('确定要撤回该资讯的审核吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+     var news_id = _this.find('input').val();
+    ajaxRequest('/newsAudit','GET',{'news_id': news_id,'is_audit':1},callback);
+  }, function(){
+    return;
+  })
+})
+//上架
+$( 'body').on('click', '.up-check',function(){
+  var _this = $(this);
+  layer.confirm('确定要上架该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsState','GET',{'news_id': news_id,'is_show':1},callback);
+  }, function(){
+    return;
+  })
+})
+//下架
+$( 'body').on('click', '.under-news',function(){
+  var _this = $(this);
+  layer.confirm('确定要下架该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsState','GET',{'news_id': news_id,'is_show':2},callback);
+  }, function(){
+    return;
+  })
+});
+//删除
+$( 'body').on('click', '.delete',function(){
+  var _this = $(this);
+  layer.confirm('确定要删除该资讯吗？', {
+    btn: ['是的','取消'] //按钮
+  }, function(){
+    var news_id = _this.find('input').val();
+    ajaxRequest('/newsDelete','GET',{'news_id': news_id},function(json){
+      if (json.code) {
+        window.location.href="/news_list?is_show=1&tab=1";
+      }
+    });
+  }, function(){
+    return;
+  })
+});
+
+function ajaxRequest(url,type,data,callback){
+  $.ajax({
+      url:url,
+      type: type,
+      data:data,
+      traditional:true,
+      success:callback
+  });
+}
+function callback(json){
+  if (json.code) {
+    window.location.reload();
+  }
+}
+</script>
+</html>

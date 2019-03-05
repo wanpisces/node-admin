@@ -1,0 +1,276 @@
+{% extends './public/layout.html' %}
+{% block header %}
+<style>
+    .layui-layout-body {
+        overflow: auto;
+    }
+
+    .layui-layout-admin .layui-body {
+        bottom: auto;
+    }
+    .layui-form-select dl{
+        z-index: 99999;
+    }
+    .upload-item-box {
+          width: 145px;
+          height: 145px;
+          text-align: center;
+          margin-right: 5px;
+          float: left;
+    }
+    .upload-item-box img{
+        height: 100%;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if goods_id %}
+  <blockquote class="layui-elem-quote">编辑商品</blockquote>
+{% else %}
+  <blockquote class="layui-elem-quote">添加商品</blockquote>
+{% endif %}
+  <div class="table-body-main" style="width: 80%;">
+    <form class="layui-form layui-form-pane1">
+      <div class="layui-form-item">
+        <label class="layui-form-label">商品名称</label>
+        <div class="layui-input-block">
+          <input type="text" name="goods_title" lay-verify="required|title"   autocomplete="off" class="layui-input" value="{{goods_title}}" placeholder="请输入商品名称">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">商品属地</label>
+        <div class="layui-input-block">
+          <select name="role_id" lay-filter="province">
+            <option value=""></option>
+            <option value="1" {% if role_id==1 %} selected {%endif%} >四川</option>
+            <option value="2" {% if role_id==2 %} selected {%endif%} >云南</option>
+            <option value="3" {% if role_id==3 %} selected {%endif%} >贵州</option>
+            <option value="4" {% if role_id==4 %} selected {%endif%} >青海</option>
+            <option value="5" {% if role_id==5 %} selected {%endif%} >西藏</option>
+            <option value="6" {% if role_id==6 %} selected {%endif%} >甘肃</option>
+            <option value="7" {% if role_id==7 %} selected {%endif%} >陕西</option>
+          </select>
+        </div>
+      </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">民族：</label>
+          <div class="layui-input-block">
+            <select name="nation" lay-filter="aihao" lay-search>
+              <option value=""></option>
+              <option value="1"  {% if nation==1 %} selected {%endif%} >藏族</option>
+              <option value="2"  {% if nation==2 %} selected {%endif%} >羌族</option>
+              <option value="3"  {% if nation==3 %} selected {%endif%} >彝族</option>
+            </select>
+          </div>
+        </div>
+
+          <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">商品缩略图</label>
+            <div class="layui-input-inline">
+              <button type="button" class="layui-btn" id="btnUploadThumb">选择图片</button>
+            </div>
+            <div class="layui-form-mid layui-word-aux">当前只允许上传 .png .gif .jpeg .bmp 格式图片, 双击可删除图片</div>
+         </div>
+         <div  class="layui-form-item layui-form-text" id="previewThumb" {%if !goods_thumb %} style="display: none;"{% endif %}>
+           <label class="layui-form-label"></label>
+           <div class="layui-input-block">
+              <div class="layui-upload-list">
+                  {%if goods_thumb %}
+                     <div class="upload-item-box">
+                        <img class="layui-upload-img" src="{{base_url}}{{goods_thumb}}">'
+                        <input type="hidden" name="goods_thumb" value='{{goods_thumb}}'>
+                     </div>
+                   {% endif %}
+              </div>
+           </div>
+         </div>
+
+           <div class="layui-form-item layui-form-text">
+              <label class="layui-form-label">商品图片</label>
+              <div class="layui-input-inline">
+                <button type="button" class="layui-btn" id="btnUploadPic">选择图片</button>
+              </div>
+              <div class="layui-form-mid layui-word-aux">当前只允许上传 .png .gif .jpeg .bmp 格式图片, 双击可删除图片</div>
+           </div>
+           <div  class="layui-form-item layui-form-text" id="previewPic" {%if goods_pics.length ==0 %}style="display: none;"{% endif %}>
+             <label class="layui-form-label"></label>
+             <div class="layui-input-block">
+                <div class="layui-upload-list">
+                   {% for k,v  in goods_pics %}
+                     <div class="upload-item-box">
+                        <img class="layui-upload-img" src="{{base_url}}{{v}}">'
+                        <input type="hidden" name="goods_pics" value='{{v}}'>
+                     </div>
+                   {% endfor %}
+                </div>
+             </div>
+           </div>
+
+
+          <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">商品原价：</label>
+            <div class="layui-input-block">
+               <input type="number" name="goods_price" lay-verify="required|number"  placeholder="请输入商品原价"  autocomplete="off" class="layui-input" value="{{goods_price}}">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">商品售价：</label>
+            <div class="layui-input-block">
+              <input type="number" name="goods_sale_price" lay-verify="required|number"  placeholder="请输入商品售价"  autocomplete="off" class="layui-input" value="{{goods_sale_price}}">
+            </div>
+          </div>
+          <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">商品简介：</label>
+            <div class="layui-input-block">
+              <textarea  name="goods_desc" class="layui-textarea" placeholder="请输入商品描述">{{goods_desc}}</textarea>
+            </div>
+          </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">特色服务：</label>
+            <div class="layui-input-block">
+               <input type="text" name="tags"   placeholder="请用|分开每个服务，例如：免费送货|七天无效退款"  autocomplete="off" class="layui-input" value="{{_tags}}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">商品库存：</label>
+            <div class="layui-input-block">
+              <input type="number" name="goods_amount" lay-verify="number"  placeholder="请输入商品库存 默认9999" autocomplete="off" class="layui-input" value="{{goods_amount}}">
+            </div>
+        </div>
+        <br><br>
+        <hr class="layui-bg-gray">
+        <br><br>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">店家姓名：</label>
+            <div class="layui-input-block">
+              <input type="text" name="store_name" lay-verify="required" placeholder="请输入店家名称"  autocomplete="off" class="layui-input" value="{{store_name}}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">联系电话：</label>
+            <div class="layui-input-block">
+              <input type="text" name="store_tel" lay-verify="required" placeholder="请输入店家联系电话"   autocomplete="off" class="layui-input" value="{{store_tel}}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">QQ：</label>
+            <div class="layui-input-block">
+              <input type="text" name="store_qq" lay-verify="required" placeholder="请输入店家QQ"   autocomplete="off" class="layui-input" value="{{store_qq}}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">微信：</label>
+            <div class="layui-input-block">
+              <input type="text" name="store_wechat" lay-verify="required" placeholder="请输入店家微信"   autocomplete="off" class="layui-input" value="{{store_wechat}}">
+            </div>
+        </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          {% if goods_id %}
+              <input type="hidden" name="goods_id" value="{{goods_id}}"/>
+              <input type="hidden" name="store_id" value="{{store_id}}"/>
+          {% endif%}
+          <button class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
+          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+
+{% block footer %}
+<script type="text/javascript">
+
+ layui.use(['laydate','form','upload','layer'], function(){
+
+    var laydate = layui.laydate,
+        upload  = layui.upload,
+        form    = layui.form,
+        layer   = layui.layer;
+
+
+      // 双击删除上传的图片
+    $('body').on('dblclick','.upload-item-box',function(){
+        $(this).remove();
+    });
+
+
+     //上传缩略图片实例
+    var uploadThumb= upload.render(initUploadParams(
+      '#btnUploadThumb'
+      ,function(rst){
+          $('#previewThumb').show();
+          var option =
+             '<div class="upload-item-box">'+
+                '<img class="layui-upload-img" src="'+rst.data.base_url+rst.data.key+'">'+
+                '<input type="hidden" name="goods_thumb" value=\''+rst.data.key+'\' >'+
+             '</div>';
+          $('#previewThumb .layui-upload-list').html(option);
+      }
+      ,function(rst){
+          layer.msg(rst.msg);
+      }
+      ,{
+        exts:'jpg|png|gif|bmp|jpeg' // 只允许上传pdf
+        ,size:500*1024    // 最大允许上传的文件大小kb
+      }
+    ));
+
+    // 上传视频实例
+    var uploadPic = upload.render(initUploadParams(
+      '#btnUploadPic'
+      ,function(rst){
+          $('#previewPic').show();
+          var option =
+             '<div class="upload-item-box">'+
+                '<img class="layui-upload-img" src="'+rst.data.base_url+rst.data.key+'">'+
+                '<input type="hidden" name="goods_pics" value=\''+rst.data.key+'\' >'+
+             '</div>';
+          $('#previewPic .layui-upload-list').append(option);
+      }
+      ,function(rst){
+          layer.msg(rst.msg);
+      }
+      ,{
+        exts:'jpg|png|gif|bmp|jpeg' // 只允许上传pdf
+        ,size:500*1024    // 最大允许上传的文件大小kb
+      }
+    ));
+
+      // 验证规则
+      form.verify({
+          title: function (value) {
+              if (value.length < 5) {
+                  return '标题至少得5个字符啊';
+              }
+          }
+      });
+
+      //监听提交
+      form.on('submit(demo1)', function (data) {
+          var params = data.field||{};// 表单数据
+          var pics = []; // 图
+          $.each($('input[name=goods_pic]'),function(k,v){
+              pics.push(v.value);
+          });
+          if (pics){
+            params.goods_pics = JSON.stringify(pics);
+          }
+          Http({url:'/goods',method:'post'},params,function(rst){
+              if(rst.code == 2000){
+                  layer.msg( rst.msg, {icon:1, time:1000},function(){
+                      location.href="/goods_list?is_show=1&tab=1";
+                  });
+               }else{
+                  layer.msg(rst.msg, {icon:2, time:2000});
+               }
+          });
+          return false;
+      });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+
+{% extends './public/layout.html' %}
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+  <blockquote class="layui-elem-quote">广告列表</blockquote>
+  <div class="table-body-main">
+    <table class="layui-table" id="statusTable1" lay-filter="news-list">
+      <thead>
+        <tr>
+          <th lay-data="{field:'id', width:80}">ID</th>
+          <th lay-data="{field:'adtype', width:220}">类型</th>
+          <th lay-data="{field:'adtitle', width:120}">名称</th>
+          <th lay-data="{field:'adthumb', width:100}">缩略图</th>
+          <th lay-data="{field:'adtime', width:122}">更新时间</th>
+          <th lay-data="{field:'operate', width:280}">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in data %}
+        <tr>
+          <td class="newsId">{{item.ad_id}}</td>
+          <td>
+            {% if item.ad_type == 1 %}
+                图片轮播
+            {% elseif item.ad_type == 2 %}
+                单图
+            {% else %}
+                其他
+            {% endif%}
+          </td>
+          <td><a href="/ad_detail?ad_id={{item.ad_id}}&index={{index}}">{{item.ad_name}}</a></td>
+          <td class="banner-img">
+            {% if item.ad_type==1%}
+            {% for child in item.ad_body %}
+              <a href="{{child.link}}" target="_blank"><img src="{{base_url}}{{child.img}}"></a>
+            {% endfor %}
+            {% else %}
+             <a href="{{item.ad_body.link}}" target="_blank"> <img src="{{base_url}}{{item.ad_body.img}}"></a>
+            {% endif %}
+          </td>
+          <td>{{item.ad_starttime}}</td>
+          <td><a href="/ad_edit?ad_id={{item.ad_id}}" class="edit">编辑</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="demo7"></div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}
